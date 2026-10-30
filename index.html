@@ -1,0 +1,2597 @@
+<!doctype html>
+<html lang="zh-CN" data-page-node-id="qbE4FYuxIX4FwNBBKJJt0w">
+<head data-page-node-id="FFccBXLPokJesAVziySMfy">
+  <meta charset="utf-8" data-page-node-id="K7KxT6qFNcK4irFdRQCmNB">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-page-node-id="ErU2FDdA6F8GBSSS9DA5jY">
+  <title>AI伴随方案探索html</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0d0f12;
+      --panel: rgba(25, 28, 34, .78);
+      --line: rgba(255,255,255,.12);
+      --text: #f7f8fa;
+      --muted: #aeb4bf;
+      --accent: #ff2d6f;
+      --cyan: #70f2ef;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { min-height: 100%; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      scrollbar-gutter: stable;
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 24% 12%, rgba(112,242,239,.09), transparent 30%),
+        radial-gradient(circle at 84% 86%, rgba(255,45,111,.08), transparent 32%),
+        var(--bg);
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    button { font: inherit; }
+
+    .app {
+      width: min(1180px, 100%);
+      min-height: 100vh;
+      height: auto;
+      margin: 0 auto;
+      padding: 18px 28px 48px;
+      display: grid;
+      grid-template-rows: auto auto;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .scheme-switch {
+      justify-self: center;
+      display: inline-flex;
+      gap: 5px;
+      padding: 5px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(23, 26, 32, .82);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 10px 28px rgba(0,0,0,.24), inset 0 1px rgba(255,255,255,.05);
+      z-index: 20;
+    }
+
+    .scheme-option {
+      appearance: none;
+      border: 0;
+      border-radius: 11px;
+      padding: 9px 16px;
+      color: #9299a4;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 650;
+      cursor: pointer;
+      transition: color .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+
+    .scheme-option:hover { color: #fff; }
+
+    .scheme-option[aria-pressed="true"] {
+      color: #071313;
+      background: var(--cyan);
+      box-shadow: 0 5px 18px rgba(112,242,239,.2);
+    }
+
+    .demo-layout {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(310px, 540px) minmax(300px, 420px);
+      justify-content: center;
+      align-items: center;
+      gap: clamp(30px, 6vw, 80px);
+    }
+
+    .stage {
+      min-width: 0;
+      height: 100%;
+      display: grid;
+      place-items: center;
+    }
+
+    .phone {
+      position: relative;
+      height: min(86vh, 870px);
+      max-width: 100%;
+      aspect-ratio: 1033 / 1640;
+      overflow: hidden;
+      isolation: isolate;
+      filter: drop-shadow(0 24px 46px rgba(0,0,0,.48));
+      touch-action: none;
+      background: transparent;
+    }
+
+    .frame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 280ms cubic-bezier(.22,.8,.26,1), clip-path 260ms cubic-bezier(.22,.8,.26,1);
+      will-change: opacity, clip-path;
+    }
+
+    .frame-4 {
+      clip-path: inset(6.75% 5.7% 13.3% 68.2% round 24px);
+    }
+
+    .d-wake-underlay,
+    .d-wake-state,
+    .d-wake-tools,
+    .d-wake-product-layer {
+      position: absolute;
+      display: none;
+      pointer-events: none;
+      will-change: transform, opacity, filter;
+    }
+
+    .d-wake-underlay {
+      z-index: 5;
+      left: 4.35%;
+      right: 3.78%;
+      top: 1.22%;
+      bottom: 1.22%;
+      border-radius: 9.2% / 5.8%;
+      background: #000;
+      overflow: hidden;
+    }
+
+    .d-wake-state {
+      z-index: 6;
+      left: 4.35%;
+      top: 1.22%;
+      width: 91.87%;
+      height: 97.56%;
+      object-fit: fill;
+      transform-origin: 50% 0;
+    }
+
+    .d-wake-tools {
+      z-index: 7;
+      left: 8%;
+      bottom: 3.55%;
+      width: 84.5%;
+      height: auto;
+      object-fit: contain;
+      transform-origin: 50% 100%;
+    }
+
+    .d-wake-product-layer {
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .d-wake-product-main {
+      z-index: 6;
+      clip-path: inset(1.22% 3.78% 11.7% 4.35% round 8.8%);
+      transform-origin: 4.35% 1.22%;
+    }
+
+    .d-wake-product-tools {
+      z-index: 7;
+      clip-path: inset(87.8% 3.78% 1.22% 4.35% round 0 0 8.8% 8.8%);
+      transform-origin: 50% 100%;
+    }
+
+    .d-motion-mask,
+    .d-motion-layer {
+      position: absolute;
+      z-index: 8;
+      display: none;
+      pointer-events: none;
+      will-change: transform, opacity, filter, clip-path;
+    }
+
+    .d-motion-mask {
+      z-index: 7;
+      overflow: hidden;
+      background: #000;
+      opacity: 0;
+    }
+
+    .d-motion-layer {
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      transform-origin: 50% 50%;
+    }
+
+    .phone.tracking .frame { transition: none; }
+
+    #polishedKnowledge { position:absolute; inset:0; width:100%; height:100%; z-index:9; display:none; pointer-events:none; }
+    #polishedKnowledge text { font-family:Arial,"PingFang SC","Microsoft YaHei",sans-serif; fill:white; }
+    #polishedKnowledge .glass { fill:url(#motionGlass); stroke:#c2c2c2; stroke-width:2; }
+    #polishedKnowledge .motion-tool { fill:none; stroke:#b9babc; stroke-width:4; stroke-linecap:round; stroke-linejoin:round; }
+    #polishedKnowledge .service-icon { fill:none; stroke:white; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+    #motionStatus { display:none; }
+
+    .hit {
+      position: absolute;
+      z-index: 10;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      margin: 0;
+      color: transparent;
+      touch-action: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .nav-hit {
+      left: 0;
+      right: auto;
+      top: 22.4%;
+      bottom: auto;
+      width: 5.2%;
+      height: 10.2%;
+      border-radius: 0 14px 14px 0;
+      cursor: pointer;
+    }
+
+    .orb-hit {
+      right: 3.9%;
+      bottom: 2.0%;
+      width: 17.5%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      cursor: grab;
+      display: none;
+    }
+
+    .orb-hit:active { cursor: grabbing; }
+
+    .suggestion-hit {
+      right: 7.2%;
+      bottom: 12.3%;
+      width: 26%;
+      height: 5.8%;
+      border-radius: 999px;
+      display: none;
+    }
+
+    .resize-hit {
+      left: 64.8%;
+      bottom: 11.3%;
+      width: 9.6%;
+      aspect-ratio: 1;
+      cursor: nwse-resize;
+      display: none;
+    }
+
+    .edge-hit {
+      right: 0;
+      bottom: 2%;
+      width: 12%;
+      height: 11%;
+      display: none;
+      cursor: w-resize;
+    }
+
+    .bottom-zone {
+      left: 43%;
+      right: 17%;
+      bottom: 8.5%;
+      height: 15%;
+      display: none;
+      cursor: ew-resize;
+    }
+
+    .platform-hit {
+      right: 4.5%;
+      top: 7%;
+      width: 29%;
+      height: 80%;
+      display: none;
+      cursor: pointer;
+      border-radius: 24px;
+    }
+
+    .product-nav-hit {
+      left: 30%;
+      right: 30%;
+      bottom: .4%;
+      height: 6%;
+      display: none;
+      cursor: grab;
+      border-radius: 999px;
+    }
+
+    .product-nav-hit:active { cursor: grabbing; }
+
+    .pulse {
+      display: none;
+    }
+
+    .phone.show-hint .pulse { opacity: 1; }
+
+    .pulse-nav {
+      left: 34%;
+      right: 34%;
+      bottom: 2.55%;
+      height: 2.2%;
+      border-radius: 999px;
+    }
+
+    .pulse-orb {
+      right: 5.8%;
+      bottom: 3.5%;
+      width: 13.8%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(.9); box-shadow: 0 0 0 0 rgba(112,242,239,.32); }
+      65% { transform: scale(1); box-shadow: 0 0 0 16px rgba(112,242,239,0); }
+      100% { transform: scale(.9); box-shadow: 0 0 0 0 rgba(112,242,239,0); }
+    }
+
+    .guide {
+      align-self: center;
+      min-width: 0;
+    }
+
+    /* Only rendered inside the mobile bottom sheet. */
+    .sheet-handle { display: none; }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--cyan);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 11em;
+      font-size: clamp(30px, 4vw, 52px);
+      line-height: 1.08;
+      letter-spacing: -.04em;
+    }
+
+    .subtitle {
+      margin: 14px 0 0;
+      max-width: 32em;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .scene-switch {
+      display: inline-flex;
+      gap: 6px;
+      margin-top: 18px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,.035);
+    }
+
+    .scene-option {
+      appearance: none;
+      border: 0;
+      border-radius: 10px;
+      padding: 8px 14px;
+      color: #939aa5;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 650;
+      cursor: pointer;
+      transition: color .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+
+    .scene-option:hover { color: #fff; }
+
+    .scene-option[aria-pressed="true"] {
+      color: #fff;
+      background: rgba(112,242,239,.14);
+      box-shadow: inset 0 0 0 1px rgba(112,242,239,.28);
+    }
+
+    .state-card {
+      margin-top: 16px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--panel);
+      backdrop-filter: blur(18px);
+      box-shadow: inset 0 1px rgba(255,255,255,.05);
+    }
+
+    .state-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .counter {
+      color: var(--muted);
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .state-name {
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .instruction {
+      min-height: 46px;
+      margin: 0 0 16px;
+      color: #dfe3e9;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .steps {
+      display: grid;
+      gap: 8px;
+    }
+
+    .step {
+      appearance: none;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 30px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 12px;
+      border: 1px solid transparent;
+      border-radius: 13px;
+      color: #b8bec7;
+      background: rgba(255,255,255,.035);
+      text-align: left;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .step:hover { background: rgba(255,255,255,.07); color: #fff; }
+
+    .step[aria-current="step"] {
+      color: #fff;
+      border-color: rgba(112,242,239,.3);
+      background: linear-gradient(90deg, rgba(112,242,239,.13), rgba(255,45,111,.07));
+    }
+
+    .step-index {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #8e95a0;
+      background: rgba(255,255,255,.07);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .step[aria-current="step"] .step-index {
+      color: #071313;
+      background: var(--cyan);
+    }
+
+    .step-action { color: #727986; font-size: 12px; }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .control {
+      appearance: none;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 9px 14px;
+      color: #e6e9ee;
+      background: rgba(255,255,255,.05);
+      cursor: pointer;
+    }
+
+    .control:hover { background: rgba(255,255,255,.1); }
+
+    .kbd-hint { margin-left: auto; color: #727986; font-size: 12px; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* ---------- Mobile: action panel becomes a bottom sheet instead of disappearing ---------- */
+    @media (max-width: 780px) {
+      html, body { height: 100%; }
+      body { overflow: hidden; overscroll-behavior: none; background: #0d0f12; }
+      .app {
+        width: 100%;
+        height: 100dvh;
+        min-height: 0;
+        padding: max(8px, env(safe-area-inset-top)) 0 0;
+        grid-template-rows: auto minmax(0, 1fr);
+        gap: 6px;
+        background: #0d0f12;
+      }
+      .scheme-switch { transform: scale(.92); transform-origin: top center; }
+      .demo-layout { display: block; height: 100%; min-height: 0; }
+      .stage {
+        width: 100%;
+        height: 100%;
+        padding-bottom: calc(var(--sheet-h, 214px) + 6px);
+        transition: padding-bottom .3s cubic-bezier(.22,.8,.26,1);
+      }
+      .phone { width: auto; height: min(100%, 158.761vw); max-width: 100%; max-height: 100%; filter: none; }
+
+      .guide {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 300;
+        display: block;
+        max-height: 80dvh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 0 16px calc(64px + env(safe-area-inset-bottom));
+        border-top: 1px solid rgba(255,255,255,.14);
+        border-radius: 22px 22px 0 0;
+        background: linear-gradient(180deg, rgba(23,26,32,.97), rgba(13,15,18,.99));
+        -webkit-backdrop-filter: blur(24px);
+        backdrop-filter: blur(24px);
+        box-shadow: 0 -20px 48px rgba(0,0,0,.6);
+        animation: sheet-in .34s cubic-bezier(.22,.8,.26,1) both;
+      }
+
+      @keyframes sheet-in {
+        from { transform: translateY(18px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+
+      .sheet-handle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        padding: 11px 0 9px;
+        margin: 0;
+        border: 0;
+        background: transparent;
+        color: #98a0ac;
+        font-size: 12px;
+        font-weight: 650;
+        letter-spacing: .02em;
+        cursor: pointer;
+      }
+
+      .sheet-grip {
+        width: 38px;
+        height: 4px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.26);
+      }
+
+      .sheet-label::after { content: "展开全部步骤"; }
+      .guide.sheet-open .sheet-label::after { content: "收起面板"; }
+
+      .guide .eyebrow { margin-bottom: 6px; font-size: 11px; }
+      .guide h1 { max-width: none; font-size: 21px; line-height: 1.25; letter-spacing: -.02em; }
+      .guide .subtitle { margin-top: 8px; font-size: 13px; line-height: 1.6; }
+      .guide .scene-switch { margin-top: 12px; }
+      .guide .state-card {
+        margin-top: 12px;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        backdrop-filter: none;
+      }
+      .guide .state-head { margin-bottom: 8px; gap: 10px; }
+      .guide .state-name { font-size: 16px; }
+      .guide .counter { font-size: 12px; }
+      .guide .instruction {
+        min-height: 0;
+        margin: 0 0 10px;
+        font-size: 13px;
+        line-height: 1.55;
+        color: #c9cfd8;
+      }
+      .guide .controls { margin-top: 10px; gap: 8px; }
+      .guide .control { flex: 1; padding: 10px 12px; font-size: 13px; }
+      .guide .kbd-hint { display: none; }
+
+      /* Collapsed: compact chips, no long copy */
+      .guide:not(.sheet-open) .eyebrow,
+      .guide:not(.sheet-open) h1,
+      .guide:not(.sheet-open) .subtitle,
+      .guide:not(.sheet-open) .scene-switch { display: none; }
+      .guide:not(.sheet-open) .state-card { margin-top: 0; }
+      .guide:not(.sheet-open) .instruction {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .guide:not(.sheet-open) .steps {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        scrollbar-width: none;
+      }
+      .guide:not(.sheet-open) .steps::-webkit-scrollbar { display: none; }
+      .guide:not(.sheet-open) .step {
+        flex: 0 0 auto;
+        width: 36px;
+        height: 34px;
+        padding: 0;
+        display: grid;
+        grid-template-columns: 1fr;
+        place-items: center;
+      }
+      .guide:not(.sheet-open) .step [data-label],
+      .guide:not(.sheet-open) .step .step-action { display: none; }
+      .guide:not(.sheet-open) .step-index { width: 26px; height: 26px; font-size: 12px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .frame, .step { transition: none; }
+      .pulse { animation: none; }
+    }
+  
+/* Approved floating prototype: only E / knowledge is replaced. */
+.phone[data-scheme="e"][data-scene="knowledge"] > :not(#eKnowledgeFloating){visibility:hidden!important;pointer-events:none!important}
+#eKnowledgeFloating{display:none;position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent;z-index:100}
+.phone[data-scheme="e"][data-scene="knowledge"] > #eKnowledgeFloating{display:block}
+
+/* E/product uses the approved product floating demo; every other scene is untouched. */
+.phone[data-scheme="e"][data-scene="product"] > :not(#eProductFloating){visibility:hidden!important;pointer-events:none!important}
+#eProductFloating{display:none;position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent;z-index:100;color-scheme:dark}
+.phone[data-scheme="e"][data-scene="product"] > #eProductFloating{display:block}
+</style>
+</head>
+<body data-page-node-id="EPOpBgMDin3rEmNL9WfmKM">
+  <main class="app" data-page-node-id="CBLegkRFKutwXV4Gs733fv">
+    <header class="scheme-switch" aria-label="选择AI伴随模式方案" data-page-node-id="9hIenoB8yEiQjwkQHSnZLL">
+      <button class="scheme-option" data-scheme="d" aria-pressed="true" data-page-node-id="PgvsLqD15ern3hD0l19Dp3">方案 D · 底部热区</button>
+      <button class="scheme-option" data-scheme="e" aria-pressed="false" data-page-node-id="E3osQe3Cg9ir23aAacFlnR">方案 E · 悬浮陪伴</button>
+    </header>
+
+    <div class="demo-layout" data-page-node-id="QBPC8WI8IGpHBVT8UEALkR">
+      <section class="stage" aria-label="Pura X View AI伴随模式交互演示" data-page-node-id="h2xr8fhWaSv7ERxDhpkJ7z">
+      <div class="phone show-hint" id="phone" data-page-node-id="Pwtqhqi57wr1SCTfHNGvHe">
+<iframe id="eProductFloating" src="e-product-floating.html" title="方案 E 商品查询：悬浮助手与购买演示" loading="eager" data-page-node-id="wH3C8VUURnGxL2Euw2UiaP"></iframe>
+<iframe id="eKnowledgeFloating" src="e-knowledge-floating.html" title="方案 E 知识查询：悬浮助手交互" loading="eager" data-page-node-id="YkqK13rHa01M12gCVxGOjb"></iframe>
+        <img class="frame e-frame frame-1" data-frame="0" src="001.png" alt="方案E：沉浸浏览初始界面" data-page-node-id="12LdTrCpcVogjNjEyotKD0">
+        <img class="frame e-frame frame-2" data-frame="1" src="002.png" alt="方案E：AI伴随模式已唤醒" data-page-node-id="NFxcHytJ8sKvGZgFR6MiJL">
+        <img class="frame e-frame frame-3" data-frame="2" src="003.png" alt="方案E：知识查询浮窗" data-page-node-id="YGmwFCnU096Yy3vkApSfPj">
+        <img class="frame e-frame frame-4" data-frame="3" src="004.png" alt="方案E：放大的知识查询浮窗" data-page-node-id="tJXEmXXxdTm8G86cqtZUyD">
+        <img class="frame e-frame frame-5" data-frame="4" src="005.png" alt="方案E：AI功能态收起到屏幕边缘" data-page-node-id="2xqofThWirD3JvA5BAfMLo">
+
+        <img class="frame d-frame" data-frame="0" src="d001.png" alt="方案D知识查询：沉浸浏览初始界面" data-page-node-id="KBwClnT1s4ebwFAnopYVHV">
+        <img class="frame d-frame" data-frame="1" src="d002.png" alt="方案D知识查询：AI伴随模式已唤醒并显示建议" data-page-node-id="FwQBP7iGMpaty7FBUBv91G">
+        <img class="frame d-frame" data-frame="2" src="d003.png" alt="方案D知识查询：基于屏幕内容展示蓝调时刻等建议" data-page-node-id="DGHHdrQ0QtW2LPDaWH2Yj3">
+        <img class="frame d-frame" data-frame="3" src="d004.png" alt="方案D知识查询：蓝调时刻沉浸式详细对话" data-page-node-id="TPOnJ9xcnmj6eck6NKvAB6">
+        <img class="frame d-frame" data-frame="4" src="d005.png" alt="方案D知识查询：收起浮窗并继续浏览" data-page-node-id="mWX2WCXGIyMES7Zc1gxcBF">
+
+        <img class="frame d-product-frame" data-frame="0" src="d-product-001.png" alt="方案D商品查询：沉浸浏览初始界面" data-page-node-id="syGBB5rcVUFPiRdogdRDgB">
+        <img class="frame d-product-frame" data-frame="1" src="d-product-002.png" alt="方案D商品查询：底部伴随模式与识别建议" data-page-node-id="xtPErNXs5P4MaxdSc1MzXM">
+        <img class="frame d-product-frame" data-frame="2" src="d-product-003.png" alt="方案D商品查询：正在识别屏幕中的鞋款" data-page-node-id="vzS3uJImQQLqMhySf3egmj">
+        <img class="frame d-product-frame" data-frame="3" src="d-product-004.png" alt="方案D商品查询：沉浸对话展示鞋款识别结果" data-page-node-id="EYwJBwwZwBGfDMBnbdadHQ">
+        <img class="frame d-product-frame" data-frame="4" src="d-product-005.png" alt="方案D商品查询：跨平台进入Shopee并保留识别结果" data-page-node-id="oliCuqKpZqIlpce7uj3f4k">
+
+        <img class="frame product-frame" data-frame="0" src="e-product-001.png" alt="方案E商品查询：沉浸浏览初始界面" data-page-node-id="MrX0BY0GvV9eAUCMY5JAO1">
+        <img class="frame product-frame" data-frame="1" src="e-product-002.png" alt="方案E商品查询：伴随模式唤醒并显示识别屏幕建议" data-page-node-id="o4IYRqZBvYZHk2nHiyvvEq">
+        <img class="frame product-frame" data-frame="2" src="e-product-003.png" alt="方案E商品查询：正在识别屏幕商品" data-page-node-id="4tHXNabxyiIQmXaeHKpDfo">
+        <img class="frame product-frame" data-frame="3" src="e-product-004.png" alt="方案E商品查询：沉浸对话展示鞋款识别结果" data-page-node-id="asDpjyLpeGUuI6qECWagX8">
+        <img class="frame product-frame" data-frame="4" src="e-product-005.png" alt="方案E商品查询：跨平台进入Shopee并保留AI伴随浮窗" data-page-node-id="8BeN2y3VBwd5BKhm0Utssf">
+
+        <span class="d-wake-underlay" id="dWakeUnderlay" aria-hidden="true" data-page-node-id="E5cnHOzKiJs0BTzVPADLMK"></span>
+        <img class="d-wake-state" id="dWakeStart" src="d-knowledge-wake-start.png" alt="" data-page-node-id="CWSdKXFhYOM2VJWHB3O67Q">
+        <img class="d-wake-state" id="dWakeSettled" src="d-knowledge-wake-settled.png" alt="" data-page-node-id="3ujIFsWKVRGU0yHFes1bFF">
+        <img class="d-wake-tools" id="dWakeTools" src="d-knowledge-wake-tools.png" alt="" data-page-node-id="If2cOUOaZCnnFBI4Hf4nSF">
+        <img class="d-wake-product-layer d-wake-product-main" id="dWakeProductStart" src="d-product-001.png" alt="" data-page-node-id="1Ni2n4JZDoJMHXhWljmdx7">
+        <img class="d-wake-product-layer d-wake-product-main" id="dWakeProductSettled" src="d-product-002.png" alt="" data-page-node-id="hbK8TCWklMN4E0IyJuJ23F">
+        <img class="d-wake-product-layer d-wake-product-tools" id="dWakeProductTools" src="d-product-002.png" alt="" data-page-node-id="rj45AxeLSznszPHDFhqwHA">
+
+        <span class="d-motion-mask" id="dMotionMask" aria-hidden="true" data-page-node-id="0vQhFDYq3N2BgHXoGPHWV4"></span>
+        <img class="d-motion-layer" id="dMotionMain" alt="" aria-hidden="true" data-page-node-id="mM0kZBukHsjxotOSfSeGVB">
+        <img class="d-motion-layer" id="dMotionPanel" alt="" aria-hidden="true" data-page-node-id="hJS5wL6vCtRsqkyzbYXala">
+
+        <svg id="polishedKnowledge" viewBox="0 0 1033 1640" aria-hidden="true" data-page-node-id="mhOK9DYZBtsc2WEnB21ssi">
+          <defs data-page-node-id="qtDGdJGe0fmxoJrZF5wVki">
+            <linearGradient id="motionBackdrop" x1="0" y1="0" x2=".38" y2="1" data-page-node-id="o38NI6Lh5kW3zsAOGnknly"><stop stop-color="#787878" data-page-node-id="TBLmKNtDmvh87y7cz3QKo4"/><stop offset=".54" stop-color="#454545" data-page-node-id="UJckecbsCVTwvVSEXkwxf1"/><stop offset="1" stop-color="#101010" data-page-node-id="uGv6bTZRtw523T0o4HJdZY"/></linearGradient>
+            <linearGradient id="motionGlass" x2=".85" y2="1" data-page-node-id="O12GIEFplEjT63TmnxHX6L"><stop stop-color="#ffffff" stop-opacity=".11" data-page-node-id="lFssatlMlN81XkjW5Mkq9w"/><stop offset="1" stop-color="#ffffff" stop-opacity=".025" data-page-node-id="VATHs6LpsWAqyGoPKJnXbY"/></linearGradient>
+            <radialGradient id="motionOrbFill" cx=".49" cy=".42" r=".62" data-page-node-id="UPX9nVJIcXEZL86NL1Ze6D"><stop offset=".60" stop-color="#000" data-page-node-id="sEQVEUUw0UMaC70xejYwCE"/><stop offset=".78" stop-color="#071214" data-page-node-id="QHlsz4i9IqQe3vOgSJo5iX"/><stop offset=".9" stop-color="#93c7cc" data-page-node-id="8r5CxdJTE8xjEUV3gOKcda"/><stop offset="1" stop-color="#eef7ff" data-page-node-id="iKiL4oRPkhlEV778DjvzI7"/></radialGradient>
+            <linearGradient id="productEdgeColor" data-page-node-id="BKKtoW1yNcDdq3VcY0QYxL"><stop stop-color="#d3c4dc" data-page-node-id="EqhrKfaBJ0dwBkwCr66v4b"/><stop offset="1" stop-color="#83c4ce" data-page-node-id="5fJR9UFelM96nHY1eFlQPL"/></linearGradient>
+            <filter id="productEdgeGlow" x="-20%" y="-20%" width="140%" height="140%" data-page-node-id="GgMVftEERWst4le9YhXfJT"><feGaussianBlur stdDeviation="9" data-page-node-id="hQFYokAtLDgObzb5gPhNJ3"/></filter>
+            <clipPath id="motionInterior" data-page-node-id="9VN9iqyqdgqGaiHwSVmjdX"><rect x="45" y="20" width="949" height="1600" rx="97" data-page-node-id="FRuelyyHQAYfZ9HGaCZD1t"/></clipPath>
+            <clipPath id="motionMainClip" data-page-node-id="BqbslwMipFvTeTUSn02Fu4"><rect id="motionMainShape" x="45" y="20" width="949" height="1428" rx="95" data-page-node-id="pDkFXHK5U67M4qhTCXv2LO"/></clipPath>
+            <mask id="motionDeviceMask" data-page-node-id="Y84f71mpt6SfReBXG7rmhu"><rect width="1033" height="1640" fill="white" data-page-node-id="Eh3FUSjVZ6kkbNC4bvQqnK"/><rect x="45" y="20" width="949" height="1600" rx="97" fill="black" data-page-node-id="S6Sm6paOi62JxSqlfm8P2f"/></mask>
+            <clipPath id="motionOrbClip" data-page-node-id="UHb0ZvzmWQu3gKkSxj2yTz"><circle cx="134" cy="1522" r="56" data-page-node-id="rFtYL1bIVGxdoq9AUcalr1"/></clipPath>
+            <clipPath id="motionOrbEyesClip" data-page-node-id="KADKDE084kVB0hSNlBOhxE"><circle cx="132" cy="1519" r="55" data-page-node-id="VxBA1mQLZAZFRzRTtXn9Tj"/></clipPath>
+            <clipPath id="productShoeSilhouette" data-page-node-id="8Wuuj800tJMJ6P0RFM8Ssi"><path d="M372 489 379 478 390 467 401 458 417 445 432 433 444 425 457 423 473 431 486 432 502 425 518 427 529 435 540 440 548 438 555 432 562 435 568 450 573 463 578 479 577 496 571 509 553 516 526 520 496 520 469 516 445 516 418 515 392 511 377 506 371 499Z" data-page-node-id="S1htLr1emtm6Z25SUFL5NV"/></clipPath>
+            <symbol id="productShoe" viewBox="350 410 240 125" data-page-node-id="0ZwPw8U5Bo09mdYgNE3nG2"><image href="d-product-004.png" width="1033" height="1640" clip-path="url(#productShoeSilhouette)" data-page-node-id="gA7TzSXDeiQHCR4mDHEXPr"/></symbol>
+            <image id="knowledgeNavSprite" href="knowledge-nav-reference.png" width="1033" height="1640" data-page-node-id="AwIbIliLMAzwjwmBGXVY1W"/>
+            <image id="knowledgeProfileSprite" href="d002.png" width="1033" height="1640" data-page-node-id="LxVG7kFhXNinVGmBo0cSYt"/>
+            <image id="productNavSprite" href="product-nav-reference.png" width="1033" height="1640" data-page-node-id="ml7ALHfzO7EnGR2F9uetVI"/>
+          </defs>
+          <g clip-path="url(#motionInterior)" data-page-node-id="JsI8V5zviw0rgCeg4LXJ49">
+            <rect x="45" y="20" width="949" height="1600" fill="url(#motionBackdrop)" data-page-node-id="ijnV7LYNfvYpDvaMult6hZ"/>
+            <g id="motionGrain" fill="white" opacity=".07" data-page-node-id="CcApvCqFw6q49i8BzBU3A4"/>
+            <!-- One moving outline, with all source status bars excluded. -->
+            <g clip-path="url(#motionMainClip)" data-page-node-id="rM5VDIy8qrCxY8SdTk3tI0">
+              <rect id="motionMainBlack" x="45" y="20" width="949" height="1428" fill="black" data-page-node-id="9x4vUsZRigDQCOCMuLtpav"/>
+              <g id="motionSharedMain" data-page-node-id="Dfg00BCRhU5QMZkQlXvvZt">
+                <svg id="motionNav" x="45" y="85" width="949" height="90" viewBox="45 85 949 90" preserveAspectRatio="none" data-page-node-id="6dgFErjsrAhAMNnAP3EuHC"><image id="knowledgeTopNav" href="d002.png" width="1033" height="1640" data-page-node-id="86rbRm6NXNwtfSxBuIa9tB"/><image id="productTopNav" href="d-product-001.png" width="1033" height="1640" display="none" data-page-node-id="7L8Hbyd8VfrrwIoD2Z1m2J"/></svg>
+                <svg id="motionOcean" x="45" y="464" width="949" height="442" viewBox="45 464 820 442" preserveAspectRatio="none" data-page-node-id="4pueSjQdO6eqHivxvecAFK"><image id="knowledgeVideo" href="d002.png" width="1033" height="1640" data-page-node-id="J5VVvxpdu4dPxBJyNPJVZm"/><image id="productVideo" href="d-product-002.png" width="1033" height="1640" display="none" data-page-node-id="hbL4hNCu4CKGerwjGPFQLR"/></svg>
+                <g id="motionRail" transform="translate(925 614)" data-page-node-id="NU5YoDLy77GGknlZYdiLyn">
+                  <circle r="30" fill="#ffffff" fill-opacity=".18" stroke="#bbb" stroke-opacity=".5" stroke-width="2" data-page-node-id="iHYdvPc0fKTHiOJQyMhCmZ"/><circle r="19" fill="#25252c" stroke="white" stroke-width="4" data-page-node-id="HjppXHxXoMxtbGNgXSEmI3"/><circle cx="-6" cy="-2" r="3" fill="white" data-page-node-id="y25kImn3yGBWGoxTAbzVqS"/><circle cx="6" cy="-2" r="3" fill="white" data-page-node-id="G8Sl0BovvBnRyXB5LZWRu7"/><path d="m8 11 9 5" stroke="white" stroke-width="4" data-page-node-id="eFcaFJTnfbls1tsHYSWnCL"/>
+                  <circle cy="123" r="38" fill="white" data-page-node-id="UVCJ3oSzdjGxV5Aa4EvmTI"/><circle cy="162" r="19" fill="#ff285e" data-page-node-id="WX9jJAgLDr4q93joRaEdWy"/><path d="M-9 162H9 M0 153v18" stroke="white" stroke-width="3" data-page-node-id="5vD08rsqQumCyVQwMZMmyy"/>
+                  <path transform="translate(-24 218)" d="M24 9C9-8-9 4 2 23L24 45 46 23C57 4 39-8 24 9" fill="#ff285e" data-page-node-id="nj1cXVdkBR1qQuSgP3SGfQ"/><text text-anchor="middle" y="286" font-size="22" data-page-node-id="LGHC6D4MmoqxvoNBzdrKmn">2.3M</text>
+                  <g transform="translate(0 350)" data-page-node-id="MCkbBQj4HeAGg66TD4Lq2I"><path d="M0-23c-34 0-34 39-5 43l0 10 15-12C39 10 32-23 0-23" fill="#eee" data-page-node-id="3AuXin7ASpDnyBg5IP8HbQ"/><circle cx="-12" r="3.7" data-page-node-id="ctIFj1qDUywLolWQqsxxcO"/><circle r="3.7" data-page-node-id="xcOn9DH3piAawHrBRWZ9Sj"/><circle cx="12" r="3.7" data-page-node-id="EHvT0YthHICsiCgwRJu63E"/></g><text text-anchor="middle" y="402" font-size="22" data-page-node-id="rV5N8GeUQWTy9wbAVNBMVG">2,469</text>
+                  <path d="M-17 438h34v40L0 466l-17 12Z" fill="#eee" data-page-node-id="jsKQGIhbX1oYdpD6twcwjP"/><text text-anchor="middle" y="511" font-size="22" data-page-node-id="4oSd2oNHzCtzKNQIEinNmB">256.2K</text>
+                  <path d="M-23 588q0-30 23-32v-17l24 25-24 24v-15q-13-1-23 15Z" fill="#eee" data-page-node-id="BHOReizP8XLKMOloGngJWG"/><text text-anchor="middle" y="622" font-size="22" data-page-node-id="d2nVGJL16C3paMPJLfosgl">94.3K</text>
+                  <circle cy="704" r="18" fill="#c9830a" data-page-node-id="IHYjeQRxgB9E6FNfxxndM6"/><path d="m-15 695 28 17M-10 716 8 689" stroke="#a86009" stroke-width="2" data-page-node-id="1i2fa8y3nUH3JMjTuCvH6o"/>
+                </g>
+                <svg id="motionFullScreen" x="431" y="924" width="181" height="53" viewBox="431 924 181 53" data-page-node-id="wTsd8ZcnOiGOdDodexbwcn"><image href="d002.png" width="1033" height="1640" data-page-node-id="0H3udbdwNOva6DVDHLFFLI"/></svg>
+                <g id="motionCaption" data-page-node-id="e8sWI1q4a3VrFXlZzzFTQO"><text x="91" y="1227" font-size="36" font-weight="700" data-page-node-id="FwBht60ZqBljEfIIwvnXqg">Baselli</text><text x="91" y="1278" font-size="31" data-page-node-id="kB0CmowBRTFV3x63CO9BZ8">蓝调时刻太美了！！！ <tspan fill="#777" data-page-node-id="Ek2Hsyc8lrF5dHMxmXicqz">#蓝调</tspan></text><text x="90" y="1332" font-size="27" data-page-node-id="aGfVPDJ0vdBjRrcPNhIs5w">♫ Contains: Sparks - Coldplay</text></g>
+                <svg id="motionBottomNav" x="45" y="1362" width="949" height="86" viewBox="0 0 949 100" preserveAspectRatio="none" data-page-node-id="j5DZ5QGYVoV9RIbnfOj9cj">
+                  <g id="knowledgeBottomNav" data-page-node-id="2XJLl2Mw52jf8mr6nAdGIg"/><g id="productBottomNav" data-page-node-id="KBM1wIZ2ttowghNMMi2Ywi"/>
+                  <path d="M0 1H949" stroke="#222" stroke-width="2" data-page-node-id="FmX6UauXHFkT0DgD68F8rq"/>
+                  <g transform="translate(100 37)" data-page-node-id="UA26PxFUHTnfr2CcoG7g6C"><path d="M-25 0 0-23 25 0h-7v28H5V12H-5v16h-13V0Z" fill="white" data-page-node-id="CpAdpP00E15uSIVLVXDJrZ"/><text text-anchor="middle" y="55" font-size="25" data-page-node-id="AK4j9v5rBHDzg8wZucxQ2e">Home</text></g>
+                  <g transform="translate(290 37)" fill="none" stroke="#ccc" stroke-width="4" data-page-node-id="TDG6NamCDNSz5RqnElgpf4"><circle cy="-10" r="9" data-page-node-id="ZEilMcASW5PQUUw9HY9bTl"/><circle cx="20" cy="-2" r="7" data-page-node-id="lPBF2Z36UKCACCmDPLiyz9"/><path d="M-20 29q1-30 22-25 15 3 16 25 M18 12q15-5 22 17" data-page-node-id="PUBP6CbcKvVG4h9n0pDSYf"/><circle cx="24" cy="-23" r="8" fill="#ff285e" stroke="none" data-page-node-id="x4glHfKSPNCS49bS18owEE"/><text text-anchor="middle" y="55" font-size="25" stroke="none" data-page-node-id="9uHXDVnPi93TZEB73AQBgy">Friends</text></g>
+                  <g transform="translate(475 39)" data-page-node-id="FxLWephqMy3J4BZtwHhowS"><rect x="-43" y="-23" width="78" height="49" rx="12" fill="#00daed" data-page-node-id="K67ZWM5dF6zty3XtfiU7Bc"/><rect x="-35" y="-23" width="78" height="49" rx="12" fill="#ff255d" data-page-node-id="1JjLLlcNOl5QkCBk95FUi8"/><rect x="-36" y="-23" width="72" height="49" rx="12" fill="white" data-page-node-id="sXwDsyB2CRTiVV2GSYAczX"/><path d="M-11 2h22M0-9v22" stroke="#18202c" stroke-width="5" data-page-node-id="aOjLQJiWHQFp6d2dyJezVT"/></g>
+                  <g transform="translate(660 37)" fill="none" stroke="#ccc" stroke-width="4" data-page-node-id="7XmRk9Hi3LfLa3XDv7KmVm"><path d="M-18-19h36v34H5L-6 27V15h-12Z M-9-8H10M-9 1H6" data-page-node-id="tyUAurLQ5XPCwyHtH1AE7W"/><circle cx="22" cy="-24" r="8" fill="#ff285e" stroke="none" data-page-node-id="X6ROE05B5rPVrPCogt7PPe"/><text text-anchor="middle" y="55" font-size="25" stroke="none" data-page-node-id="JR7M6hpARQHMPrrbNQVSU1">Inbox</text></g>
+                  <g transform="translate(850 37)" fill="none" stroke="#ccc" stroke-width="4" data-page-node-id="oIJrcMVYwwSgP4GBTjMeg2"><circle cy="-12" r="10" data-page-node-id="OLG3MGJQVw7JDZLEgPBqAI"/><path d="M-19 29q0-31 19-31t19 31" data-page-node-id="iYxIXAT3sCr1gZO7WDhp3z"/><text text-anchor="middle" y="55" font-size="25" stroke="none" data-page-node-id="hMn12zgCZgm2xRgF2r1iLs">Profile</text></g>
+                </svg>
+                <svg id="motionKnowledgeNav" x="45" y="1362" width="949" height="86" viewBox="0 0 949 86" data-page-node-id="Jli1ESzPSNPlEFVH7KUG94">
+                  <path id="knowledgeNavRule" d="M0 1H949" stroke="#222" stroke-width="2" data-page-node-id="e5BjEdGDBrwN8IamHHCz9P"/>
+                  <svg data-nav-item="0" x="67" y="5" width="66" height="82" viewBox="80 1345 66 82" data-page-node-id="tGED1gzOuC0WSF7S63QbaH"><use href="#knowledgeNavSprite" data-page-node-id="vMpTPDoa3C0GaPRE3cTZSJ"/></svg>
+                  <svg data-nav-item="1" x="255" y="5" width="70" height="82" viewBox="218 1345 70 82" data-page-node-id="kZHMd3WyDWW9wJKHOeqH90"><use href="#knowledgeNavSprite" data-page-node-id="c4f873gHaMlqMVtXCr8i1p"/></svg>
+                  <svg data-nav-item="2" x="436" y="5" width="78" height="82" viewBox="350 1345 78 82" data-page-node-id="6Boxumy3lF03OqZAPIVjaO"><use href="#knowledgeNavSprite" data-page-node-id="42olu1e1NkrD11J5siHJ03"/></svg>
+                  <svg data-nav-item="3" x="627.5" y="5" width="65" height="82" viewBox="493 1345 65 82" data-page-node-id="lv1hZ0kXnWRoSIbOcZckgA"><use href="#knowledgeNavSprite" data-page-node-id="IHGIogdPgH2f5GFGtyHXZx"/></svg>
+                  <svg data-nav-item="4" x="815" y="5" width="70" height="75" viewBox="850 1370 70 75" data-page-node-id="o3vtIh6LEQtPE2den0NbnJ"><use href="#knowledgeProfileSprite" data-page-node-id="vJOlB7QpgE3h01Vsruv1bT"/></svg>
+                </svg>
+                <svg id="motionProductNav" x="45" y="1348" width="949" height="100" viewBox="0 0 949 100" display="none" data-page-node-id="sbaWYnsAFyF5aKXQNW3qm5">
+                  <path id="productNavRule" d="M0 1H949" stroke="#222" stroke-width="2" data-page-node-id="ZvZtY1GKcXXNkHQZKUusga"/>
+                  <svg data-product-nav-item="0" x="67" y="2" width="66" height="82" viewBox="80 1295 66 82" data-page-node-id="EbM6Vr8RnowC1Fo7hwpCk1"><use href="#productNavSprite" data-page-node-id="2YaZ5eQYdeaDLzJeZ3oCqH"/></svg>
+                  <svg data-product-nav-item="1" x="255" y="2" width="70" height="82" viewBox="218 1295 70 82" data-page-node-id="mPSYbuGX55BWdnYe3F0e5C"><use href="#productNavSprite" data-page-node-id="sOBBh54vK4pQeD0VerxNVl"/></svg>
+                  <svg data-product-nav-item="2" x="436" y="2" width="78" height="82" viewBox="350 1295 78 82" data-page-node-id="lZPJbNOqldROHet4TduUEH"><use href="#productNavSprite" data-page-node-id="z92RKA8dzRRvTdwY6RybmW"/></svg>
+                  <svg data-product-nav-item="3" x="627.5" y="2" width="65" height="82" viewBox="493 1295 65 82" data-page-node-id="WBZ4cKh8asJlC3tYAz0MVh"><use href="#productNavSprite" data-page-node-id="lZV6qGXTIbSAS99H3PUz9r"/></svg>
+                  <svg data-product-nav-item="4" x="815" y="2" width="70" height="75" viewBox="850 1370 70 75" data-page-node-id="AdeQ4X8GleT1uf2Pj2Rxip"><use href="#knowledgeProfileSprite" data-page-node-id="Cj8s18tMnndDaw7gwAkFAA"/></svg>
+                </svg>
+                <path id="motionHandle" d="M 637 1418 Q 695 1414 700 1354" fill="none" stroke="#666" stroke-width="12" stroke-linecap="round" opacity="0" data-page-node-id="lrhN8M4HggnetIBn7WIJrW"/>
+              </g>
+            </g>
+            <rect id="productEdgeGlowShape" x="45" y="20" width="949" height="1428" rx="95" fill="none" stroke="url(#productEdgeColor)" stroke-width="16" filter="url(#productEdgeGlow)" opacity="0" data-page-node-id="AbsFDNUz9JjjphMWAgJi6v"/>
+            <g id="motionSuggestionGroup" opacity="0" data-page-node-id="kFgUgZoHq6HrQwJmwcG7pm">
+              <rect class="glass" x="752" y="613" width="219" height="114" rx="40" style="fill:#fff;fill-opacity:.2" data-page-node-id="aK1LRgXWmaWk14iVM3enHE"/>
+              <text x="783" y="658" font-size="32" data-page-node-id="PGdgIPN3FxI27zmoawNFCe">蓝调时刻是<tspan x="783" dy="43" data-page-node-id="7tcCOaKVxgDqC3kqmFGPUL">什么？</tspan></text>
+              <rect class="glass" x="752" y="795" width="219" height="114" rx="40" style="fill:#fff;fill-opacity:.2" data-page-node-id="mSYeSuv1zXDAlq6QlNAbeS"/>
+              <text x="783" y="841" font-size="32" data-page-node-id="nqMzw02E3ITsPIIgNQfRuB">这是什么地<tspan x="783" dy="43" data-page-node-id="eUxLEBndCDhiGed8ODHnGE">方？</tspan></text>
+            </g>
+            <g id="motionDialogEarly" opacity="0" data-page-node-id="zoCF2fDH72MQ0Cgi5xhnbp">
+              <text x="294" y="168" font-size="38" font-weight="700" data-page-node-id="ssLXKXHD0uW2pfvG2YGuer">AI伴随中</text>
+              <path class="glass" d="M742 279 H934 V350 Q934 392 892 392 H742 Q701 392 701 350 V321 Q701 279 742 279Z" style="fill:#fff;fill-opacity:.2" data-page-node-id="AptVH4BmgXA3Oi622j0As8"/>
+              <text x="734" y="327" font-size="32" data-page-node-id="Fq1RhCsv2ajP3FWsd3DiqH">蓝调时刻是<tspan x="734" dy="43" data-page-node-id="W3eAU6CuGdYC08YDQKLEIP">什么？</tspan></text>
+              <text x="281" y="1400" font-size="32" font-weight="600" data-page-node-id="OmMCT04oAAfE9VuRtKmZcs">服务建议</text>
+              <g transform="translate(499 1355)" data-page-node-id="J64AoDU9VtuNRd82hQU2Cj"><rect class="glass" width="216" height="70" rx="35" data-page-node-id="6VmnfCuk5j83CQt9acWlTH"/><path class="service-icon" d="M29 18h20l9 9v25H29Z M49 18v11h10 M35 34h14 M35 41h14 M48 52l7-7 7 7 M55 45v15" data-page-node-id="y5ZxMBACpx3vOTJM7s53xE"/><text x="68" y="46" font-size="32" data-page-node-id="YDiLQPUFf1N5cgmD9Rt8ig">内容总结</text></g>
+              <g transform="translate(728 1355)" data-page-node-id="jCicK41hyRhyi7FrAs70cg"><rect class="glass" width="218" height="70" rx="35" data-page-node-id="VA60xdBtQ5Tq0UACDSsQP4"/><path class="service-icon" d="M27 35q15-23 30 0-15 23-30 0Z" data-page-node-id="Ro7BwSqHioEIGOQvCcA6m0"/><circle class="service-icon" cx="42" cy="35" r="6" data-page-node-id="f7x4YXtdBDC8jVZxCeX6rE"/><text x="68" y="46" font-size="32" data-page-node-id="pCAPRuNVH3GfPCA6dEetzO">识别屏幕</text></g>
+              <rect class="glass" x="223" y="1465" width="728" height="110" rx="55" data-page-node-id="pyptqg5HyurBCVALPG4PjV"/><path d="M295 1500v42" stroke="white" stroke-width="4" data-page-node-id="CLCFZBub0Dz1kW4J3K6t8C"/><text x="299" y="1533" font-size="29" fill="#e5f6ff" data-page-node-id="d7wZt6e5GJCcOooWEaKV9S">Ask Floa...</text>
+              <circle cx="888" cy="1521" r="32" fill="#007fff" data-page-node-id="dfe60YBabz05wG3FrCQ66q"/><path d="M888 1538v-32m-11 12 11-11 11 11" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="8cIhTgXs5sWCVsalRWrs7n"/>
+            </g>
+            <g id="motionDialogAnswer" opacity="0" data-page-node-id="uLqdcAJlSwFpC1UnCqckqb">
+              <path d="m298 447 8 9 15-17" fill="none" stroke="#989b9e" stroke-width="3" data-page-node-id="Qc6JKKpQwSiIswPqSLsfsZ"/><text x="329" y="459" font-size="29" style="fill:#96989a" data-page-node-id="yAoRhfQLiLUVweaWvsbKPS">生成总结</text>
+              <text x="294" y="511" font-size="31" data-page-node-id="UNOlWLiNfQYXi4it2vkrnP"><tspan x="294" data-page-node-id="uR5N0Z3jhACDr7jy4UxcJ2">简单说：日出前、日落后，太阳在地平线下方</tspan><tspan x="294" dy="44" data-page-node-id="GxsODApeTXMOLdWvMjlUsP">-4°～ -6° 的一小段时间，天空呈现均匀深邃的</tspan><tspan x="294" dy="44" data-page-node-id="0Gk5UDKeIVLqVwqOgU1zZJ">蓝，是风光、城市摄影的黄金时段。</tspan><tspan x="294" dy="60" data-page-node-id="xxd8hn2miiABAEWcLWS7Zq">✦ 核心特点</tspan><tspan x="294" dy="61" data-page-node-id="Fg2iw1aXgZ8aMtOqFs2MJd">时间很短：一般只有 15～20 分钟，季节、纬</tspan><tspan x="294" dy="44" data-page-node-id="lkso8aVuA0UPjV2SPqua5t">度会影响时长；傍晚是日落之后，清晨是日出</tspan><tspan x="294" dy="44" data-page-node-id="RzzdvaGNkr0OJrWCkaCMtR">之前，一天两次杭州市生态...</tspan></text>
+              <g class="motion-tool" transform="translate(300 850)" data-page-node-id="yZ3UwzNlLjjofYkvJ8cPWc"><rect x="1" y="7" width="31" height="31" rx="5" data-page-node-id="J0avafi7XsJpVfzh3RK3cd"/><path d="M9 7V5q0-5 5-5h19q5 0 5 5v22 M9 23h15 M17 15v16 M56 10h9l11-9v37L65 28h-9Z M84 8q12 12 0 24 M91 4q17 16 0 32 M115 16l10-15q7-4 7 5l-2 11h14q7 0 5 6l-4 13h-30Z M114 16v22 M178 19l-2 13q1 9 7 5l10-17V0h-24q-5 0-5 5v13Z M193 0h10v20h-10" data-page-node-id="Me7pTUY9y1jFzO22ChR5wB"/></g>
+              <path d="M300 927H944" stroke="#a4a4a4" stroke-width="2" opacity=".6" data-page-node-id="Eazx0yt0TzGUdvPyKDJysk"/>
+              <rect class="glass" x="300" y="945" width="299" height="69" rx="34" data-page-node-id="GpxLDubajcD6Ugz0q6KmHb"/><text x="321" y="992" font-size="32" data-page-node-id="MobsTRA5DhBQFbzGXU7loI">蓝调时刻是什么？</text>
+              <rect class="glass" x="300" y="1031" width="267" height="69" rx="34" data-page-node-id="siEsfXhkab2eh0oxmGDtUj"/><text x="321" y="1078" font-size="32" data-page-node-id="Cr5BLqfCbFb8M91JrZM17C">这是什么地方？</text>
+            </g>
+            <g id="productSuggestionGroup" display="none" opacity="0" data-page-node-id="yAAQFu6h9aVBP6RzPOS9Eo">
+              <rect class="glass" x="752" y="463" width="219" height="317" rx="40" style="fill:#fff;fill-opacity:.22" data-page-node-id="MqQjoQ7n8CTyX14m2x2qiT"/>
+              <text x="783" y="512" font-size="32" font-weight="600" data-page-node-id="QI8K2UuL1bkdHU73grlGTx">产品信息</text>
+              <use href="#productShoe" x="780" y="544" width="164" height="86" data-page-node-id="GMbTatN5sq9lzIyJoSQmhR"/>
+              <text x="783" y="665" font-size="32" data-page-node-id="XlSh1Zisu5NtP1p7apcDG9">PUMA3988<tspan x="783" dy="44" data-page-node-id="LRuPemUlRiP0MOO6AYBI80">46-09 黑 +</tspan><tspan x="783" dy="44" data-page-node-id="UyjuS69WdZNdiEkRkqZLKS">薄雾粉</tspan></text>
+              <rect class="glass" x="752" y="821" width="219" height="113" rx="40" style="fill:#fff;fill-opacity:.22" data-page-node-id="fhDqSsu5nMNULZBdxx6phr"/>
+              <text x="783" y="866" font-size="32" data-page-node-id="8zgHuR11kGz7J2w8Ay4V5X">搜索类似同<tspan x="783" dy="43" data-page-node-id="EjJf3GVqw1blOuHAf3eTHd">款鞋</tspan></text>
+              <rect class="glass" x="752" y="975" width="219" height="75" rx="37" style="fill:#fff;fill-opacity:.22" data-page-node-id="6eG4CF9JAFF6BRVUfQstHI"/>
+              <rect x="777" y="991" width="40" height="41" rx="7" fill="#ff512b" data-page-node-id="xZYzBLvybme1NMez3batGZ"/><path d="M785 1003h24v23h-24Z M790 1003v-3q7-13 14 0v3" fill="none" stroke="white" stroke-width="2" data-page-node-id="Cd9ScoyjiVQFZtu0Owovbi"/><text x="791" y="1022" font-size="19" data-page-node-id="begwf2s4sCbHNk1xv1sApx">S</text><text x="844" y="1025" font-size="32" data-page-node-id="Y4gc2mCCw3NOSAULgzBs2b">去购买</text>
+            </g>
+            <g id="productDialogEarly" display="none" opacity="0" data-page-node-id="lA977r3s3eQLtcnfBf8QZv">
+              <text x="294" y="168" font-size="38" font-weight="700" data-page-node-id="723yeHCjQw2hNGSq4aBMMU">AI伴随中</text>
+              <use href="#productShoe" x="350" y="410" width="240" height="125" data-page-node-id="1ED321XmpmZP0y57zzQAQ5"/>
+              <text x="294" y="576" font-size="32" data-page-node-id="91CpnpybhgJfDqHLbCGG9K">产品信息：PUMA39846-09 黑 + 薄雾粉</text>
+              <text x="281" y="1400" font-size="32" font-weight="600" data-page-node-id="YrBt8p1w91LEITiyCKsXBn">服务建议</text>
+              <g transform="translate(495 1355)" data-page-node-id="dYrGaHUM5WMUZkjNmQiVFQ"><rect class="glass" width="217" height="70" rx="35" data-page-node-id="sQBw3O7n9pTcLIIsHaVOKT"/><path class="service-icon" d="M29 18h20l9 9v25H29Z M49 18v11h10 M35 34h14 M35 41h14 M48 52l7-7 7 7 M55 45v15" data-page-node-id="PvUOehhMNERvIEp1PgguJA"/><text x="68" y="46" font-size="32" data-page-node-id="CdqhoeycE2Dz6THehSmVEC">内容总结</text></g>
+              <g transform="translate(728 1355)" data-page-node-id="prDfbTfUX5MEOcM8OgiOVC"><rect class="glass" width="218" height="70" rx="35" data-page-node-id="Vk6FsxcBit59EBvKFDDh6a"/><path class="service-icon" d="M27 35q15-23 30 0-15 23-30 0Z" data-page-node-id="b9tflXLEWoF2s2zoeZ6TFF"/><circle class="service-icon" cx="42" cy="35" r="6" data-page-node-id="0vT40CD2NbD8IuQHHspPzz"/><text x="68" y="46" font-size="32" data-page-node-id="wI0IiVYIbMwDIIQjaN5Rrh">识别屏幕</text></g>
+              <rect class="glass" x="223" y="1465" width="728" height="110" rx="55" data-page-node-id="hWkw3p2Oy1mMTEdhUqXgTn"/><path d="M295 1500v42" stroke="white" stroke-width="4" data-page-node-id="UIiRE9oMwr6b4aqlDsoXzB"/><text x="299" y="1533" font-size="29" data-page-node-id="WprA3AnAlYFx30yxsd77Mj">Ask Floa...</text>
+              <circle cx="888" cy="1521" r="32" fill="#007fff" data-page-node-id="GDN7PAFX5gxb6jVn5RIlTB"/><path d="M888 1538v-32m-11 12 11-11 11 11" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="DusBLX1AyzM9MFPj6EKOPl"/>
+            </g>
+            <g id="productDialogAnswer" display="none" opacity="0" data-page-node-id="GXUbOQLd3dCnZWLH4sHuin">
+              <path d="m298 327 8 9 15-17" fill="none" stroke="#989b9e" stroke-width="3" data-page-node-id="A0FShqmhkokyZiPJkFgZ5r"/><text x="329" y="339" font-size="29" style="fill:#96989a" data-page-node-id="4WctQlup0EGn4ZCrvsVWxH">生成总结</text>
+              <text x="294" y="637" font-size="32" data-page-node-id="ZQmK1Jufe4S8t0clCKnZM6"><tspan x="294" data-page-node-id="FmZ8cTS4vUueWko8B45w5C">货号：398846-09，官方色号：PUMA Black-</tspan><tspan x="294" dy="44" data-page-node-id="Tr00grKdzGDMuI1DMDqwCw">Mauve Mist（黑 + 薄雾粉）</tspan><tspan x="294" dy="61" data-page-node-id="dGI0gu77FdUsj8K13DNXfD">鞋型原型：复古赛车鞋，翻毛皮材质，低帮薄</tspan><tspan x="294" dy="44" data-page-node-id="Pobs27yuVJkpwG51Cb5wfn">底，鞋身修长，是最近 TikTok / 抖音爆火的款</tspan><tspan x="294" dy="44" data-page-node-id="QFZAqXno1vXkNR6VeiV1hI">式。</tspan><tspan x="294" dy="61" data-page-node-id="0NqHuR7aeHj68bFMnVmF99">图上的粉色蝴蝶结是博主自己更换的丝带鞋</tspan><tspan x="294" dy="44" data-page-node-id="wCRqDd94IiA1T7i1ZkZAMX">带，并非鞋子原厂自带配件，原版出厂配的是</tspan><tspan x="294" dy="44" data-page-node-id="dZgu1Vy5fGAPdtwN0QYqTm">黑色扁鞋带。</tspan></text>
+              <g class="motion-tool" transform="translate(300 1027)" data-page-node-id="7N8RNppfj5PsGEThAx7Kl1"><rect x="1" y="7" width="31" height="31" rx="5" data-page-node-id="Z6ylBc5HVtqWXS9o3BLekX"/><path d="M9 7V5q0-5 5-5h19q5 0 5 5v22 M9 23h15 M17 15v16 M56 10h9l11-9v37L65 28h-9Z M84 8q12 12 0 24 M91 4q17 16 0 32 M115 16l10-15q7-4 7 5l-2 11h14q7 0 5 6l-4 13h-30Z M114 16v22 M178 19l-2 13q1 9 7 5l10-17V0h-24q-5 0-5 5v13Z M193 0h10v20h-10" data-page-node-id="EtJ71BnfiXqVo7akRBDOml"/></g>
+              <path d="M298 1101H926" stroke="#aaa" stroke-width="2" opacity=".6" data-page-node-id="ZPKfuK42Z4X58ydExhNdRL"/>
+              <rect class="glass" x="296" y="1119" width="277" height="75" rx="37" data-page-node-id="B8c4ArkdsZqMgx2iEvYiXq"/><text x="324" y="1168" font-size="32" data-page-node-id="VKkW6rdUWZULAshaCZqCHR">搜索类似同款鞋</text>
+              <rect class="glass" x="296" y="1211" width="219" height="75" rx="37" data-page-node-id="w7yEiGIc33gUKcA2aBLjji"/><rect x="321" y="1227" width="40" height="41" rx="7" fill="#ff512b" data-page-node-id="fBfv3IAZtqmxEtSeYR8Nil"/><path d="M329 1239h24v23h-24Z M334 1239v-3q7-13 14 0v3" fill="none" stroke="white" stroke-width="2" data-page-node-id="9GtTH1FbqF3kHH0McmFHNn"/><text x="335" y="1258" font-size="19" data-page-node-id="A7NqhSHXN5U5LppS8hFq8q">S</text><text x="389" y="1262" font-size="32" data-page-node-id="DYFpH2TcuujMYw8OreHJ0J">去购买</text>
+            </g>
+            <g id="motionClose" opacity="0" data-page-node-id="cWfHLYu1ooQM0OTCykpkUK"><circle class="glass" cx="870" cy="152" r="51" data-page-node-id="gxzbQavXUkn4VB5XcGFlG4"/><path d="m853 135 34 34m0-34-34 34" stroke="white" stroke-width="7" stroke-linecap="round" data-page-node-id="ozxlmjFaSjdE58jd5aJiaP"/></g>
+            <g id="motionCompanionTools" data-page-node-id="J9NlkBuAFQG4tZPGkp8Zu2">
+              <g transform="translate(222 1487)" data-page-node-id="SzUKCNmy3PO7EovpxvnZic"><rect class="glass" width="217" height="69" rx="35" data-page-node-id="6YjCUi6mK0PTD9BaEOEvNG"/><path class="service-icon" d="M26 35q15-23 30 0-15 23-30 0Z" data-page-node-id="RfpgLdqAD884VnNKnvMikF"/><circle class="service-icon" cx="41" cy="35" r="6" data-page-node-id="dUta9f1p7A9l3gvO39roHo"/><text x="69" y="47" font-size="32" data-page-node-id="Sh3bUMCG5hFWM5WltX4Umw">识别屏幕</text></g>
+              <g transform="translate(466 1487)" data-page-node-id="EeqgqfsUuFRS2bkFPFBh5l"><rect class="glass" width="217" height="69" rx="35" data-page-node-id="SDYCXwp86IpooTKZJYTtQ5"/><path class="service-icon" d="M27 17h20l9 9v26H27Z M47 17v12h10 M34 34h14 M34 41h14 M47 52l7-7 7 7 M54 45v15" data-page-node-id="cw2FqfJBv2c7yHN705QRDH"/><text x="69" y="47" font-size="32" data-page-node-id="wVhv0HFJM0OtloxW9FQ2yl">内容总结</text></g>
+              <text x="834" y="1533" font-size="32" font-weight="600" data-page-node-id="P5fit0xPosdXrzOWUvp8mB">服务建议</text>
+            </g>
+            <g id="motionOrb" data-page-node-id="sx2Bh7V1j1nzq5pG8vEhBl"><circle cx="134" cy="1522" r="54" fill="url(#motionOrbFill)" stroke="#a6bec3" stroke-width="2" data-page-node-id="o6RoEzM0r6G71D9FJpXpZN"/>
+            <g id="motionOrbWave" stroke="white" stroke-width="3" stroke-linecap="round" data-page-node-id="hF4RLPpK6RU6nsyknskKaB"><path d="M103 1522v1m7-3v5m7-6v7m7-10v14m7-20v26m7-18v10m7-13v16m7-9v3m7-2v1" data-page-node-id="wt2xwXUjdNOdXWtFuFrdlm"/></g>
+            <g id="motionOrbEyes" fill="white" opacity="0" data-page-node-id="g2wkoMBKDq1B6SfRpwAVvG"><rect x="108" y="1496" width="8" height="20" rx="4" data-page-node-id="gH49LJysLrhlm8VhQIC8pJ"/><rect x="149" y="1496" width="8" height="20" rx="4" data-page-node-id="QBGSkBpYGNuaWbnDn2wNGH"/></g>
+            </g>
+            <image id="motionStatusReference" href="status-reference.png" x="45" y="20" width="949" height="72.23" data-page-node-id="fGMHzIw1nFZDmzEcm3GL3w"/>
+            <rect id="motionHomeIndicator" x="350" y="1580" width="335" height="9" rx="4.5" fill="white" opacity="0" data-page-node-id="8Y9nT144pEJDxj6a7FYgAO"/>
+            <!-- Status icons live only here: no source status bar is in the moving layer. -->
+            <g id="motionStatus" data-page-node-id="Zgjpb8OLDVANnJCaATca4T"><text x="84" y="66" font-size="28" font-weight="600" data-page-node-id="eP49TmFo20FUnKGvuaBYtV">9:30</text><text x="148" y="65" font-size="26" data-page-node-id="98WqoO9bmyzkRD6CpQnV3k">⚙</text><g transform="translate(184 46)" fill="white" data-page-node-id="wwu1AXaLQlMfmY84QshmAN"><path d="M0 0q22-6 24 9 0 12-17 13l-7 5 1-10Q-7 9 0 0Z" data-page-node-id="AE74K9d0wpD4VFKtTGG5cE"/><circle cx="5" cy="8" r="1.5" fill="black" data-page-node-id="3rKU9ciYCEAnx11VrZ0RwV"/><circle cx="11" cy="8" r="1.5" fill="black" data-page-node-id="v5Or5iuuzpE8lZ9GVUh5xC"/><circle cx="17" cy="8" r="1.5" fill="black" data-page-node-id="fXzUUmqgJhH4sjrWUQURSo"/></g><g fill="white" data-page-node-id="D4nxH6lGKT1e55l9iTw6ZL"><rect x="834" y="56" width="5" height="11" rx="1" data-page-node-id="iOCChsXzMPCLa2Vx3RWp0l"/><rect x="842" y="52" width="5" height="15" rx="1" data-page-node-id="p4ZZBk0bC69NDDvYrTDtrY"/><rect x="850" y="48" width="5" height="19" rx="1" data-page-node-id="uAKE75dL9RNsPkpkPBpQdY"/><rect x="858" y="44" width="5" height="23" rx="1" data-page-node-id="Wg4qdXQASwudvsHVib1fG4"/></g><text x="872" y="66" font-size="26" font-weight="600" data-page-node-id="kUjlpyaDfIbiB0DhNQu6cB">5G</text><rect x="911" y="46" width="36" height="23" rx="5" fill="white" data-page-node-id="NI10IknMMgdoykLg3ObzJ9"/><rect x="949" y="53" width="3" height="9" rx="1" fill="#999" data-page-node-id="fyKAO7wnHYA2mF3DyqvUVo"/><text x="916" y="65" font-size="22" font-weight="600" style="fill:black" data-page-node-id="IO7srLlnMbdi4YkYXBpgx1">80</text></g>
+          </g>
+          <image href="d002.png" width="1033" height="1640" mask="url(#motionDeviceMask)" data-page-node-id="A0QpGwMV9WySBJAJu8Kxz1"/>
+        </svg>
+
+        <button class="hit nav-hit" id="navHit" aria-label="双击手机左侧红色按钮唤醒AI伴随模式" data-page-node-id="66Tfkm74XyCYHOxXlpKRQE">双击左侧红色按钮</button>
+        <button class="hit orb-hit" id="orbHit" aria-label="点击AI球提问，或向右滑动收起" data-page-node-id="Z7gLg7AnObBQftVbU1aokJ">AI球</button>
+        <button class="hit suggestion-hit" id="suggestionHit" aria-label="识别屏幕并询问蓝调时刻" data-page-node-id="aER3VxGWo9Q37OKoVAXXAy">识别屏幕</button>
+        <button class="hit resize-hit" id="resizeHit" aria-label="向左拖动放大浮窗" data-page-node-id="zbDD6WKQJuMxcguoUBcBO5">调整浮窗</button>
+        <button class="hit bottom-zone" id="bottomZone" aria-label="拖动右下角热区调整对话区域" data-page-node-id="ekEz13EqDDMXuLFHjnHo9E">底部交互热区</button>
+        <button class="hit edge-hit" id="edgeHit" aria-label="点击或向左拖动恢复AI伴随模式" data-page-node-id="oSkkr0QVX2iH74mpCHQGVP">恢复AI伴随模式</button>
+        <button class="hit platform-hit" id="platformHit" aria-label="打开Shopee继续搜索识别到的商品" data-page-node-id="UC2aEplIKQ7EzJq5dedPco">跨平台搜索</button>
+        <button class="hit product-nav-hit" id="productNavHit" aria-label="滑动底部导航条切换至Shopee" data-page-node-id="uGSRp7wkZDak6RpMN7FgHL">滑动切换应用</button>
+
+        <span class="pulse pulse-nav" id="navPulse" aria-hidden="true" data-page-node-id="RX2hZ7XHJKkg2aa7FK18Cf"></span>
+        <span class="pulse pulse-orb" id="orbPulse" aria-hidden="true" data-page-node-id="5PaMe5vJBVt4NqMQhabwku"></span>
+      </div>
+    </section>
+
+    <aside class="guide" data-page-node-id="ASXODtx0c0yXAjUZDD2EaJ">
+      <button class="sheet-handle" id="sheetToggle" type="button" aria-expanded="false" aria-controls="stateCard">
+        <span class="sheet-grip" aria-hidden="true"></span>
+        <span class="sheet-label"></span>
+      </button>
+      <p class="eyebrow" id="conceptName" data-page-node-id="4Algy2qaFqMtgdfiEU8Wtd">AI Companion · Concept D</p>
+      <h1 id="schemeTitle" data-page-node-id="cUpfoP3nRkfCQJUry2P4dF">底部为交互热区，方便用户操作</h1>
+      <p class="subtitle" id="schemeSubtitle" data-page-node-id="IkZkOIHW6jtApHi0dMQOep">知识查询场景——通过底部热区完成对话区域的展开与收起</p>
+
+      <div class="scene-switch" id="sceneSwitch" aria-label="选择演示场景" data-page-node-id="tUMSKDyFM0INyC47rwzR5D">
+        <button class="scene-option" data-scene="knowledge" aria-pressed="true" data-page-node-id="1TQ24GVPls4HCRWpaHtpEF">知识查询</button>
+        <button class="scene-option" data-scene="product" aria-pressed="false" data-page-node-id="WjBX637r5CV9zA8N6BE2DC">商品查询</button>
+      </div>
+
+      <div class="state-card" data-page-node-id="dZT8DsTNoDLabr18NTljD6">
+        <div class="state-head" data-page-node-id="mchCc4y2RROD9RmUBxMe1V">
+          <div class="state-name" id="stateName" data-page-node-id="bq2rGC8iljygyHt0goTiSa">沉浸浏览</div>
+          <div class="counter" id="counter" data-page-node-id="GO2HU4XT7WqDaEDA679I4D">01 / 05</div>
+        </div>
+        <p class="instruction" id="instruction" data-page-node-id="UJrcjcyHjK4vajan4jJdkn">双击手机左侧的红色按钮，唤醒 AI 伴随模式。</p>
+
+        <nav class="steps" aria-label="演示步骤" data-page-node-id="81FGvTq4ONXn0se6UFF2YH">
+          <button class="step" data-step="0" aria-current="step" data-page-node-id="KLuVdYl9V7cbigpigTg6Mg"><span class="step-index" data-page-node-id="QfmkerA4MumRsOvcLZytoh">1</span><span data-label data-page-node-id="EXjjIou8vV2G0OTBVkOnrz">沉浸浏览</span><span class="step-action" data-action data-page-node-id="YbfFE37jWthWuF5frG5LgH">双击</span></button>
+          <button class="step" data-step="1" data-page-node-id="DiCosA55Amm5UdZCu69nzZ"><span class="step-index" data-page-node-id="SHHpXZnbioQPG55Pczh5Ej">2</span><span data-label data-page-node-id="0vzQ5tBfkaGAiP4Eb0MjFH">唤醒伴随</span><span class="step-action" data-action data-page-node-id="JlTEPcox6S5NeBbedB082Z">点击提问</span></button>
+          <button class="step" data-step="2" data-page-node-id="NAMQQfQPns0E8lMKA0myJ9"><span class="step-index" data-page-node-id="wnP1OhJJcXI9dURV5vlP9s">3</span><span data-label data-page-node-id="eJlNzyHuGRbKQm0GOda9cR">询问AI</span><span class="step-action" data-action data-page-node-id="lwqbUbcda0Jc4Iu3Lpy8XB">拖动展开</span></button>
+          <button class="step" data-step="3" data-page-node-id="v13pJbaesZPe5dJeBsiboU"><span class="step-index" data-page-node-id="FLCgq3D2BjiA1TFr6BG31y">4</span><span data-label data-page-node-id="X8GWrKRmy9Py6prEnYkVB7">沉浸对话</span><span class="step-action" data-action data-page-node-id="dlQN4yHR8XfAjWr6h0KPuO">拖动收起</span></button>
+          <button class="step" data-step="4" data-page-node-id="WvRLodnG4n79BQ0tI9Hijg"><span class="step-index" data-page-node-id="1xx1cPRvLj17QRxlyfQcWX">5</span><span data-label data-page-node-id="AgTamAS9cEqdnv9tNXpSDA">回归伴随</span><span class="step-action" data-action data-page-node-id="Qs1VwEXYGsw29BY7YwbNEF">完成</span></button>
+        </nav>
+
+        <div class="controls" data-page-node-id="cr8mLJDp1x4qVD3fWBsGPX">
+          <button class="control" id="restart" data-page-node-id="pqESmUQbCEM8dLKZfElzJ2">重新演示</button>
+          <button class="control" id="next" data-page-node-id="hfNg4ECJChrtX9vvnorIFu">下一步</button>
+          <span class="kbd-hint" data-page-node-id="IJYi2ZFowHHTWPI2d7qBgx">D/E 方案 · K/P 场景 · 1–5 步骤</span>
+        </div>
+      </div>
+      <div class="sr-only" id="live" aria-live="polite" data-page-node-id="u8Y5mKO7UHqVLDUMVy3Rke"></div>
+    </aside>
+    </div>
+  </main>
+
+  <script type="application/x-disabled">
+    (() => {
+      const clamp = (v, min = 0, max = 1) => Math.min(max, Math.max(min, v));
+      const frames = [...document.querySelectorAll('.frame')];
+      const phone = document.getElementById('phone');
+      const navHit = document.getElementById('navHit');
+      const orbHit = document.getElementById('orbHit');
+      const suggestionHit = document.getElementById('suggestionHit');
+      const resizeHit = document.getElementById('resizeHit');
+      const edgeHit = document.getElementById('edgeHit');
+      const stateName = document.getElementById('stateName');
+      const instruction = document.getElementById('instruction');
+      const counter = document.getElementById('counter');
+      const live = document.getElementById('live');
+      const stepButtons = [...document.querySelectorAll('.step')];
+
+      const states = [
+        ['沉浸浏览', '双击手机左侧的红色按钮，唤醒 AI 伴随模式。'],
+        ['唤醒伴随', '点击右下角的圆形 AI，或点击“识别屏幕”，发起知识查询。'],
+        ['询问AI', '按住浮窗左下角的 L 形区域并向左拖动，连续放大浮窗。'],
+        ['放大浮窗', '按住右下角的圆形 AI 并向右滑动，将伴随功能收起到侧边。'],
+        ['侧边收起', '点击屏幕右侧露出的半圆 AI，或向左拖动，即可恢复伴随模式。']
+      ];
+
+      let phase = 0;
+      let resizeProgress = 0;
+      let dockProgress = 0;
+      let tracking = null;
+      let startX = 0;
+      let startProgress = 0;
+      let lastTap = 0;
+      let animationFrame = 0;
+
+      function setOpacity(index, value) {
+        frames[index].style.opacity = String(clamp(value));
+      }
+
+      function render() {
+        frames.forEach(frame => frame.style.opacity = '0');
+        frames[3].style.clipPath = `inset(6.75% 5.7% 13.3% ${68.2 - 29.6 * resizeProgress}% round 24px)`;
+
+        if (phase === 0) setOpacity(0, 1);
+        if (phase === 1) setOpacity(1, 1 - dockProgress);
+        if (phase === 2 || phase === 3) {
+          setOpacity(2, 1 - dockProgress);
+          if (resizeProgress > 0.002) setOpacity(3, 1 - dockProgress);
+        }
+        if (phase === 4) setOpacity(4, 1);
+        else if (dockProgress > 0) setOpacity(4, dockProgress);
+
+        navHit.style.display = phase === 0 ? 'block' : 'none';
+        orbHit.style.display = phase >= 1 && phase <= 3 ? 'block' : 'none';
+        suggestionHit.style.display = phase === 1 ? 'block' : 'none';
+        resizeHit.style.display = phase === 2 || phase === 3 ? 'block' : 'none';
+        edgeHit.style.display = phase === 4 ? 'block' : 'none';
+        resizeHit.style.left = `${64.8 - 29.6 * resizeProgress}%`;
+
+        phone.classList.toggle('show-hint', !tracking);
+        document.getElementById('navPulse').style.display = phase === 0 ? 'block' : 'none';
+        document.getElementById('orbPulse').style.display = phase === 1 ? 'block' : 'none';
+
+        stateName.textContent = states[phase][0];
+        instruction.textContent = states[phase][1];
+        counter.textContent = `${String(phase + 1).padStart(2, '0')} / 05`;
+        stepButtons.forEach((button, index) => {
+          if (index === phase) button.setAttribute('aria-current', 'step');
+          else button.removeAttribute('aria-current');
+        });
+      }
+
+      function announce() {
+        live.textContent = `第 ${phase + 1} 步，${states[phase][0]}。${states[phase][1]}`;
+      }
+
+      function stopAnimation() {
+        if (animationFrame) cancelAnimationFrame(animationFrame);
+        animationFrame = 0;
+      }
+
+      function animateValue(from, to, duration, update, complete) {
+        stopAnimation();
+        const start = performance.now();
+        const ease = t => 1 - Math.pow(1 - t, 3);
+        const tick = now => {
+          const raw = clamp((now - start) / duration);
+          update(from + (to - from) * ease(raw));
+          if (raw < 1) animationFrame = requestAnimationFrame(tick);
+          else {
+            animationFrame = 0;
+            if (complete) complete();
+          }
+        };
+        animationFrame = requestAnimationFrame(tick);
+      }
+
+      function jumpToStep(nextPhase, shouldAnnounce = true) {
+        clearRecognitionTimer();
+        stopAnimation();
+        tracking = null;
+        phone.classList.remove('tracking');
+        phase = clamp(nextPhase, 0, 4);
+        resizeProgress = phase === 3 ? 1 : 0;
+        dockProgress = phase === 4 ? 1 : 0;
+        render();
+        if (shouldAnnounce) announce();
+      }
+
+      function openAssistant() {
+        if (phase !== 1) return;
+        phase = 2;
+        resizeProgress = 0;
+        dockProgress = 0;
+        render();
+        announce();
+      }
+
+      function beginTracking(type, event) {
+        tracking = type;
+        startX = event.clientX;
+        startProgress = type === 'resize' ? resizeProgress : dockProgress;
+        phone.classList.add('tracking');
+        phone.classList.remove('show-hint');
+        event.currentTarget.setPointerCapture(event.pointerId);
+      }
+
+      function finishResize() {
+        const target = resizeProgress >= .42 ? 1 : 0;
+        const from = resizeProgress;
+        tracking = null;
+        // 自动补全阶段继续关闭 CSS 二次过渡，完全由同一条 rAF 曲线驱动，避免拖拽释放后滞后或跳帧。
+        phone.classList.add('tracking');
+        animateValue(from, target, 240, value => {
+          resizeProgress = value;
+          render();
+        }, () => {
+          phase = target ? 3 : 2;
+          resizeProgress = target;
+          phone.classList.remove('tracking');
+          render();
+          announce();
+        });
+      }
+
+      function finishDock() {
+        const target = dockProgress >= .34 ? 1 : 0;
+        const from = dockProgress;
+        tracking = null;
+        phone.classList.remove('tracking');
+        animateValue(from, target, 230, value => {
+          dockProgress = value;
+          render();
+        }, () => {
+          if (target) {
+            phase = 4;
+            dockProgress = 1;
+          } else {
+            dockProgress = 0;
+          }
+          render();
+          announce();
+        });
+      }
+
+      function restoreFromEdge() {
+        if (phase !== 4) return;
+        phase = 1;
+        dockProgress = 1;
+        resizeProgress = 0;
+        animateValue(1, 0, 260, value => {
+          dockProgress = value;
+          render();
+        }, () => {
+          dockProgress = 0;
+          render();
+          announce();
+        });
+      }
+
+      navHit.addEventListener('pointerup', event => {
+        const now = performance.now();
+        if (now - lastTap < 380) {
+          lastTap = 0;
+          jumpToStep(1);
+        } else {
+          lastTap = now;
+          navHit.animate([
+            { transform: 'scaleX(.92)', opacity: .35 },
+            { transform: 'scaleX(1)', opacity: 0 }
+          ], { duration: 260, easing: 'ease-out' });
+        }
+        event.preventDefault();
+      });
+
+      navHit.addEventListener('dblclick', event => {
+        if (!dWakeAnimating && phase === 0) jumpToStep(1);
+        event.preventDefault();
+      });
+
+      suggestionHit.addEventListener('click', openAssistant);
+
+      orbHit.addEventListener('pointerdown', event => beginTracking('dock', event));
+      orbHit.addEventListener('pointermove', event => {
+        if (tracking !== 'dock') return;
+        const distance = event.clientX - startX;
+        dockProgress = clamp(startProgress + distance / (phone.clientWidth * .13));
+        render();
+      });
+      orbHit.addEventListener('pointerup', event => {
+        if (tracking !== 'dock') return;
+        const moved = Math.abs(event.clientX - startX);
+        if (moved < 9) {
+          tracking = null;
+          phone.classList.remove('tracking');
+          dockProgress = 0;
+          if (phase === 1) openAssistant();
+          else jumpToStep(1);
+        } else finishDock();
+      });
+      orbHit.addEventListener('pointercancel', finishDock);
+
+      resizeHit.addEventListener('pointerdown', event => beginTracking('resize', event));
+      resizeHit.addEventListener('pointermove', event => {
+        if (tracking !== 'resize') return;
+        const distance = startX - event.clientX;
+        resizeProgress = clamp(startProgress + distance / (phone.clientWidth * .29));
+        phase = resizeProgress > .98 ? 3 : 2;
+        render();
+      });
+      resizeHit.addEventListener('pointerup', event => {
+        if (tracking === 'resize') finishResize();
+      });
+      resizeHit.addEventListener('pointercancel', finishResize);
+
+      edgeHit.addEventListener('click', restoreFromEdge);
+      edgeHit.addEventListener('pointerdown', event => {
+        if (phase !== 4) return;
+        tracking = 'restore';
+        startX = event.clientX;
+        startProgress = 1;
+        phone.classList.add('tracking');
+        edgeHit.setPointerCapture(event.pointerId);
+      });
+      edgeHit.addEventListener('pointermove', event => {
+        if (tracking !== 'restore') return;
+        const distance = startX - event.clientX;
+        phase = 1;
+        dockProgress = clamp(1 - distance / (phone.clientWidth * .13));
+        render();
+      });
+      edgeHit.addEventListener('pointerup', () => {
+        if (tracking !== 'restore') return;
+        const target = dockProgress <= .66 ? 0 : 1;
+        const from = dockProgress;
+        tracking = null;
+        phone.classList.remove('tracking');
+        animateValue(from, target, 220, value => {
+          dockProgress = value;
+          render();
+        }, () => {
+          if (target === 1) phase = 4;
+          else phase = 1;
+          dockProgress = target;
+          render();
+          announce();
+        });
+      });
+
+      stepButtons.forEach(button => button.addEventListener('click', () => jumpToStep(Number(button.dataset.step))));
+      document.getElementById('restart').addEventListener('click', () => jumpToStep(0));
+      document.getElementById('next').addEventListener('click', () => jumpToStep((phase + 1) % 5));
+
+      window.addEventListener('keydown', event => {
+        if (/^[1-5]$/.test(event.key)) jumpToStep(Number(event.key) - 1);
+        else if (event.key === 'ArrowRight') jumpToStep(Math.min(4, phase + 1));
+        else if (event.key === 'ArrowLeft') jumpToStep(Math.max(0, phase - 1));
+        else if (event.key.toLowerCase() === 'r') jumpToStep(0);
+      });
+
+      phone.addEventListener('contextmenu', event => event.preventDefault());
+      window.addEventListener('blur', () => {
+        if (tracking === 'resize') finishResize();
+        else if (tracking === 'dock') finishDock();
+      });
+
+      jumpToStep(0, false);
+    })();
+  </script>
+  <script>
+    (() => {
+      const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
+      const allFrames = [...document.querySelectorAll('.frame')];
+      const eFrames = [...document.querySelectorAll('.e-frame')];
+      const dFrames = [...document.querySelectorAll('.d-frame')];
+      const dProductFrames = [...document.querySelectorAll('.d-product-frame')];
+      const productFrames = [...document.querySelectorAll('.product-frame')];
+      const phone = document.getElementById('phone');
+      const dWakeUnderlay = document.getElementById('dWakeUnderlay');
+      const dWakeStart = document.getElementById('dWakeStart');
+      const dWakeSettled = document.getElementById('dWakeSettled');
+      const dWakeTools = document.getElementById('dWakeTools');
+      const dWakeProductStart = document.getElementById('dWakeProductStart');
+      const dWakeProductSettled = document.getElementById('dWakeProductSettled');
+      const dWakeProductTools = document.getElementById('dWakeProductTools');
+      const dMotionMask = document.getElementById('dMotionMask');
+      const dMotionMain = document.getElementById('dMotionMain');
+      const dMotionPanel = document.getElementById('dMotionPanel');
+      const navHit = document.getElementById('navHit');
+      const orbHit = document.getElementById('orbHit');
+      const suggestionHit = document.getElementById('suggestionHit');
+      const resizeHit = document.getElementById('resizeHit');
+      const bottomZone = document.getElementById('bottomZone');
+      const edgeHit = document.getElementById('edgeHit');
+      const platformHit = document.getElementById('platformHit');
+      const productNavHit = document.getElementById('productNavHit');
+      const stateName = document.getElementById('stateName');
+      const instruction = document.getElementById('instruction');
+      const counter = document.getElementById('counter');
+      const live = document.getElementById('live');
+      const conceptName = document.getElementById('conceptName');
+      const schemeTitle = document.getElementById('schemeTitle');
+      const schemeSubtitle = document.getElementById('schemeSubtitle');
+      const stepButtons = [...document.querySelectorAll('.step')];
+      const schemeButtons = [...document.querySelectorAll('.scheme-option')];
+      const sceneButtons = [...document.querySelectorAll('.scene-option')];
+
+      const schemes = {
+        d: {
+          concept: 'AI Companion · Concept D',
+          title: '底部为交互热区，方便用户操作',
+          subtitle: '知识查询场景——通过底部热区完成对话区域的展开与收起',
+          states: [
+            ['沉浸浏览', '点击手机左侧的红色按钮，唤醒 AI 伴随模式。'],
+            ['唤醒伴随', '点击底部AI或任意AI建议标签，获取基于当前屏幕内容的建议。'],
+            ['询问AI', '点击右侧建议，进入沉浸式伴随。'],
+            ['沉浸对话', '拖动主屏幕右下角，收起对话并回归伴随浏览。'],
+            ['回归伴随', '对话浮窗已收起，可以继续浏览当前内容。']
+          ],
+          labels: ['沉浸浏览', '唤醒伴随', '询问AI', '沉浸对话', '回归伴随'],
+          actions: ['点击唤醒', '点击AI建议', '点击建议', '拖动主屏', '继续浏览']
+        },
+        e: {
+          concept: 'AI Companion · Concept E',
+          title: '悬浮式陪伴，保留沉浸体验',
+          subtitle: '知识查询场景·以悬浮窗承载对话，打造沉浸伴随感。',
+          states: [
+            ['沉浸浏览', '双击手机左侧的红色按钮，唤醒 AI 伴随模式。'],
+            ['唤醒伴随', '点击右下角的圆形 AI，或点击“识别屏幕”，发起知识查询。'],
+            ['询问AI', '点击右下角“蓝调时刻是什么？”，进入沉浸对话。'],
+            ['沉浸对话', '在更大的对话空间中继续浏览；按住右下角的圆形 AI 向右滑动即可收起。'],
+            ['侧边收起', '点击屏幕右侧露出的半圆 AI，或向左拖动，即可恢复伴随模式。']
+          ],
+          labels: ['沉浸浏览', '唤醒伴随', '询问AI', '沉浸对话', '侧边收起'],
+          actions: ['双击唤醒', '点击提问', '点击建议', '右滑收起', '点击恢复']
+        }
+      };
+
+      const productScenarioBase = {
+        labels: ['沉浸浏览', '唤醒伴随', '识别屏幕', 'AI对话', '跨平台伴随'],
+        actions: ['双击唤醒', '点击识别', '自动完成', '滑动导航条', '继续搜索']
+      };
+
+      const productScenarios = {
+        d: {
+          ...productScenarioBase,
+          labels: ['沉浸浏览', '唤醒伴随', '识别屏幕', '沉浸对话', '跨平台伴随'],
+          actions: ['双击唤醒', '点击识别', '点击建议', '切换APP', '继续搜索'],
+          concept: 'AI Companion · Concept D · Product Search',
+          title: '底部热区伴随，跨平台继续任务',
+          subtitle: '商品查询场景·在底部热区唤起识别建议,并携带商品信息进入三方平台继续搜索。',
+          states: [
+            ['沉浸浏览', '双击手机左侧的红色按钮，唤醒 AI 伴随模式。'],
+            ['唤醒伴随', '点击底部“识别屏幕”，让 AI 识别当前视频中的商品。'],
+            ['识别屏幕', '识别完成后，点击右侧“产品信息”卡片，进入沉浸对话。'],
+            ['沉浸对话', '右侧已显示鞋款和货号信息；切换 APP 至 Shopee。'],
+            ['跨平台伴随', '已切换至 Shopee，AI 对话区继续保留商品信息，辅助搜索、比价和筛选。']
+          ]
+        },
+        e: {
+          ...productScenarioBase,
+          labels: ['沉浸浏览', '唤醒伴随', '识别屏幕', '沉浸对话', '跨平台伴随'],
+          actions: ['双击唤醒', '点击识别', '点击建议', '切换APP', '继续搜索'],
+          concept: 'AI Companion · Concept E · Product Search',
+          title: '悬浮式陪伴，跨平台继续任务',
+          subtitle: '商品查询场景·在底部热区唤起识别建议,并携带商品信息进入三方平台继续搜索。',
+          states: [
+            ['沉浸浏览', '双击手机左侧的红色按钮，唤醒 AI 伴随模式。'],
+            ['唤醒伴随', '点击右侧“识别屏幕”，让 AI 识别当前视频中的商品。'],
+            ['识别屏幕', '识别完成后，点击右下角“产品信息”卡片，进入沉浸对话。'],
+            ['沉浸对话', '浮窗已显示鞋款和货号信息；切换 APP 至三方平台。'],
+            ['跨平台伴随', '已切换至三方平台，AI 浮窗继续保留商品信息，辅助搜索、比价和筛选。']
+          ]
+        }
+      };
+
+      let scheme = 'd';
+      let scene = 'product';
+      let phase = 0;
+      let resizeProgress = 0;
+      let dockProgress = 0;
+      let platformSwipeReady = false;
+      let tracking = null;
+      let startX = 0;
+      let startY = 0;
+      let startProgress = 0;
+      let lastTap = 0;
+      let animationFrame = 0;
+      let recognitionTimer = 0;
+      let dWakeAnimating = false;
+      let dWakeToken = 0;
+      let dWakeAnimations = [];
+      let dKnowledgeAnimating = false;
+      let dKnowledgeToken = 0;
+      let dKnowledgeAnimations = [];
+
+      // This view owns both resting and moving geometry; no screenshot handoff.
+      const polished = (() => {
+        const svg = document.getElementById('polishedKnowledge');
+        const byId = id => document.getElementById(id);
+        const shape = byId('motionMainShape');
+        const main = byId('motionSharedMain');
+        const opacity = (id, value) => byId(id).setAttribute('opacity', String(clamp(value)));
+        const smooth = value => { const t = clamp(value); return t * t * (3 - 2 * t); };
+        const mix = (a, b, t) => a + (b - a) * t;
+        let raf = 0;
+        let active = false;
+        let progress = 0;
+        let question = 0;
+        let answer = 0;
+        let transitionTo = 0;
+        // One coherent, stationary background; texture is never patched locally.
+        let seed = 47;
+        for (let i = 0; i < 125; i++) {
+          const random = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+          const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          dot.setAttribute('cx', 48 + random() * 941);
+          dot.setAttribute('cy', 23 + random() * 1588);
+          dot.setAttribute('r', 1 + random() * 3);
+          dot.setAttribute('opacity', .25 + random() * .65);
+          byId('motionGrain').appendChild(dot);
+        }
+        function draw(p, q = 1, a = 1, tools = 1) {
+          progress = p; question = q; answer = a;
+          const isProduct = scene === 'product';
+          ['productVideo', 'productTopNav', 'productBottomNav', 'productSuggestionGroup', 'productDialogEarly', 'productDialogAnswer'].forEach(id => byId(id).setAttribute('display', isProduct ? 'inline' : 'none'));
+          ['knowledgeVideo', 'knowledgeTopNav', 'knowledgeBottomNav', 'motionSuggestionGroup', 'motionDialogEarly', 'motionDialogAnswer'].forEach(id => byId(id).setAttribute('display', isProduct ? 'none' : 'inline'));
+          byId('motionStatus').querySelector('text').textContent = isProduct ? '19:26' : '9:30';
+          byId('motionStatus').querySelector('text').setAttribute('x', isProduct ? '78' : '84');
+          byId('motionStatus').querySelectorAll('text')[1].setAttribute('x', isProduct ? '158' : '148');
+          byId('motionStatus').querySelector('g').setAttribute('transform', isProduct ? 'translate(198 46)' : 'translate(184 46)');
+          byId('motionGrain').setAttribute('opacity', isProduct ? '0' : '.07');
+          const fold = clamp(p);
+          const retract = clamp(p - 1);
+          const wake = clamp(-p);
+          const contentWidth = mix(949, 687, fold);
+          const visibleWidth = mix(contentWidth, 214, retract);
+          const shift = -473 * retract;
+          shape.setAttribute('width', visibleWidth);
+          shape.setAttribute('rx', mix(95, 94, fold));
+          shape.setAttribute('height', 1428 + 172 * wake);
+          byId('motionMainBlack').setAttribute('width', visibleWidth);
+          byId('motionMainBlack').setAttribute('height', 1428 + 172 * wake);
+          byId('productEdgeGlowShape').setAttribute('width', visibleWidth);
+          opacity('productEdgeGlowShape', isProduct ? .7 * fold * (1 - retract) : 0);
+          main.setAttribute('transform', `translate(${shift} 0)`);
+          byId('motionNav').setAttribute('width', contentWidth);
+          opacity('motionNav', isProduct ? wake : 1 - fold);
+          byId('motionNav').setAttribute('viewBox', isProduct ? '45 72 949 108' : '45 85 949 90');
+          byId('motionNav').setAttribute('y', isProduct ? 72 : 85);
+          byId('motionNav').setAttribute('height', isProduct ? 108 : 90);
+          const ocean = byId('motionOcean');
+          ocean.setAttribute('viewBox', isProduct ? '45 418 820 492' : '45 464 820 442');
+          ocean.setAttribute('width', contentWidth);
+          ocean.setAttribute('y', (isProduct ? mix(418, 440, fold) : mix(464, 475, fold) - 30 * retract) + (isProduct ? 86 : 31) * wake);
+          ocean.setAttribute('height', isProduct ? mix(492, 382, fold) : mix(442, 387, fold));
+          byId('motionRail').setAttribute('transform', `translate(${contentWidth - 23} ${(isProduct ? mix(568, 562, fold) : mix(614, 602, fold) - 30 * retract) + (isProduct ? 86 : 31) * wake})`);
+          byId('motionFullScreen').setAttribute('x', 45 + contentWidth / 2 - 90.5);
+          byId('motionFullScreen').setAttribute('y', (isProduct ? mix(933, 840, fold) : mix(924, 882, fold) - 30 * retract) + (isProduct ? 86 : 42) * wake);
+          const captionLines = byId('motionCaption').querySelectorAll('text');
+          captionLines[0].textContent = isProduct ? 'Racy' : 'Baselli';
+          captionLines[1].firstChild.textContent = isProduct ? '生活碎片分享' : '蓝调时刻太美了！！！ ';
+          captionLines[1].querySelector('tspan').textContent = isProduct ? '#随拍' : '#蓝调';
+          byId('motionCaption').setAttribute('transform', `translate(${-21 * fold} ${-24 * fold + 44 * wake})`);
+          if (isProduct) byId('motionCaption').setAttribute('transform', `translate(${-9 - 8 * fold} ${-21 - 12 * fold + 66 * wake})`);
+          const nav = byId('motionBottomNav');
+          nav.setAttribute('width', contentWidth);
+          nav.setAttribute('y', (isProduct ? mix(1348, 1301, fold) : mix(1362, 1340, fold)) + (isProduct ? 86 : 112) * wake);
+          nav.setAttribute('height', isProduct ? 100 : mix(86, 108, fold));
+          nav.setAttribute('viewBox', '0 0 949 100');
+          // Knowledge icons retain reference geometry; only their centres move.
+          // The enclosing screen still performs the unchanged fold and clipping.
+          nav.style.display = 'none';
+          const knowledgeNav = byId('motionKnowledgeNav');
+          knowledgeNav.style.display = isProduct ? 'none' : 'block';
+          const navHeight = mix(86, 108, fold);
+          knowledgeNav.setAttribute('width', contentWidth);
+          knowledgeNav.setAttribute('height', navHeight);
+          knowledgeNav.setAttribute('y', mix(1362, 1340, fold) + 112 * wake);
+          knowledgeNav.setAttribute('viewBox', `0 0 ${contentWidth} ${navHeight}`);
+          byId('knowledgeNavRule').setAttribute('d', `M0 1H${contentWidth}`);
+          const fullCentres = [100, 290, 475, 660, 850];
+          const foldedCentres = [68, 208, 344, 482, 619];
+          knowledgeNav.querySelectorAll('[data-nav-item]').forEach((icon, index) => {
+            icon.setAttribute('x', mix(fullCentres[index], foldedCentres[index], fold) - Number(icon.getAttribute('width')) / 2);
+          });
+          const productNav = byId('motionProductNav');
+          productNav.style.display = isProduct ? 'block' : 'none';
+          productNav.setAttribute('width', contentWidth);
+          productNav.setAttribute('height', '100');
+          productNav.setAttribute('viewBox', `0 0 ${contentWidth} 100`);
+          productNav.setAttribute('y', mix(1348, 1301, fold) + 86 * wake);
+          byId('productNavRule').setAttribute('d', `M0 1H${contentWidth}`);
+          const productFullCentres = [97, 288, 475, 662, 852];
+          const naturalWidths = [66, 70, 78, 65, 70];
+          const naturalHeights = [82, 82, 82, 82, 75];
+          const uniformScale = mix(1.2, 1, fold);
+          productNav.querySelectorAll('[data-product-nav-item]').forEach((icon, index) => {
+            const width = naturalWidths[index] * uniformScale;
+            icon.setAttribute('width', width);
+            icon.setAttribute('height', naturalHeights[index] * uniformScale);
+            icon.setAttribute('x', mix(productFullCentres[index], foldedCentres[index], fold) - width / 2);
+          });
+          opacity('motionHandle', fold);
+          byId('motionHandle').setAttribute('transform', `translate(${contentWidth - 687} 0)`);
+          opacity('motionSuggestionGroup', p <= 1 ? (transitionTo === 3 ? 1 : q) : 1 - smooth(retract * 2));
+          opacity('motionClose', p <= 1 ? (transitionTo === 3 ? 1 : q) : 1);
+          opacity('motionCompanionTools', (1 - smooth(retract)) * tools);
+          opacity('motionOrb', tools);
+          opacity('motionHomeIndicator', isProduct ? wake : 0);
+          byId('motionCompanionTools').setAttribute('transform', `translate(0 ${18 * (1 - tools)})`);
+          byId('motionOrb').setAttribute('transform', `translate(0 ${18 * (1 - tools)})`);
+          opacity('motionDialogEarly', p > 1 ? q : 0);
+          opacity('motionDialogAnswer', p > 1 ? a : 0);
+          opacity('productSuggestionGroup', p <= 1 ? (transitionTo === 3 ? 1 : q) : 1 - smooth(retract * 2));
+          opacity('productDialogEarly', p > 1 ? q : 0);
+          opacity('productDialogAnswer', p > 1 ? a : 0);
+          opacity('motionOrbWave', 1 - smooth(retract));
+          opacity('motionOrbEyes', smooth(retract));
+          svg.dataset.progress = p.toFixed(4);
+          svg.dataset.question = q.toFixed(4);
+          svg.dataset.answer = a.toFixed(4);
+          svg.dataset.tools = tools.toFixed(4);
+        }
+        function cancel() {
+          cancelAnimationFrame(raf);
+          raf = 0;
+          active = false;
+          transitionTo = 0;
+        }
+        function sync() {
+          const show = scheme === 'd' && !dWakeAnimating && phase >= 0 && phase <= 3 && dockProgress === 0;
+          svg.style.display = show ? 'block' : 'none';
+          if (!show) return;
+          dFrames.forEach(frame => { frame.style.opacity = '0'; frame.style.transition = 'none'; });
+          if (scene === 'product') dProductFrames.forEach(frame => { frame.style.opacity = '0'; frame.style.transition = 'none'; });
+          if (!active) draw(phase - 1, phase >= 2 ? 1 : 0, phase >= 3 ? 1 : 0, phase > 0 ? 1 : 0);
+        }
+        function play(targetPhase) {
+          cancel();
+          cancelDKnowledgeAnimation();
+          const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+          const from = phase - 1;
+          const to = targetPhase - 1;
+          const movement = reduced ? 1 : (targetPhase === 1 ? 780 : targetPhase === 2 ? 560 : 520);
+          const fade = reduced ? 1 : (targetPhase === 1 ? 380 : 650);
+          const delay = reduced ? 0 : 300;
+          const total = movement + fade + (targetPhase === 3 ? delay : 0);
+          transitionTo = targetPhase;
+          active = true;
+          dKnowledgeAnimating = true;
+          phone.classList.add('knowledge-animating');
+          render();
+          const started = performance.now();
+          const tick = now => {
+            const elapsed = now - started;
+            const linear = clamp(elapsed / movement);
+            // Quintic smootherstep provides zero velocity and acceleration at both ends.
+            const t = linear * linear * linear * (linear * (linear * 6 - 15) + 10);
+            const q = targetPhase === 1 ? 0 : smooth((elapsed - movement) / fade);
+            const a = targetPhase === 3 ? smooth((elapsed - movement - delay) / fade) : 0;
+            const tools = targetPhase === 1 ? smooth((elapsed - movement) / fade) : 1;
+            draw(mix(from, to, t), q, a, tools);
+            svg.dataset.elapsed = elapsed.toFixed(1);
+            svg.dataset.movement = movement;
+            if (elapsed < total) raf = requestAnimationFrame(tick);
+            else {
+              active = false;
+              raf = 0;
+              dKnowledgeAnimating = false;
+              phone.classList.remove('knowledge-animating');
+              phase = targetPhase;
+              resizeProgress = phase === 3 ? 1 : 0;
+              dockProgress = 0;
+              render();
+              announce();
+            }
+          };
+          draw(from, 0, 0, targetPhase === 1 ? 0 : 1);
+          raf = requestAnimationFrame(tick);
+        }
+        // The close button is visual-only here; its input layer uses the same reset path.
+        svg.addEventListener('motion-reset', cancel);
+        return { sync, play, cancel };
+      })();
+
+      function getConfig() {
+        return scene === 'product' ? productScenarios[scheme] : schemes[scheme];
+      }
+
+      function clearRecognitionTimer() {
+        if (recognitionTimer) window.clearTimeout(recognitionTimer);
+        recognitionTimer = 0;
+      }
+
+      function setOpacity(frameSet, index, value) {
+        frameSet[index].style.opacity = String(clamp(value));
+      }
+
+      function cancelElementAnimations(elements) {
+        elements.forEach(element => {
+          if (!element || typeof element.getAnimations !== 'function') return;
+          element.getAnimations().forEach(animation => animation.cancel());
+        });
+      }
+
+      function resetDWakeLayers() {
+        cancelElementAnimations([
+          dWakeStart,
+          dWakeSettled,
+          dWakeTools,
+          dWakeProductStart,
+          dWakeProductSettled,
+          dWakeProductTools,
+          ...dProductFrames
+        ]);
+        dWakeUnderlay.style.display = 'none';
+        dWakeStart.style.display = 'none';
+        dWakeSettled.style.display = 'none';
+        dWakeTools.style.display = 'none';
+        dWakeProductStart.style.display = 'none';
+        dWakeProductSettled.style.display = 'none';
+        dWakeProductTools.style.display = 'none';
+        dWakeStart.style.opacity = '1';
+        dWakeStart.style.transform = 'none';
+        dWakeStart.style.filter = 'none';
+        dWakeSettled.style.opacity = '0';
+        dWakeTools.style.opacity = '0';
+        dWakeTools.style.transform = 'translate3d(0, 22px, 0) scale(.97)';
+        dWakeTools.style.filter = 'blur(4px)';
+        dWakeProductStart.style.opacity = '1';
+        dWakeProductStart.style.transform = 'none';
+        dWakeProductStart.style.filter = 'none';
+        dWakeProductSettled.style.opacity = '0';
+        dWakeProductSettled.style.transform = 'none';
+        dWakeProductSettled.style.filter = 'none';
+        dWakeProductTools.style.opacity = '0';
+        dWakeProductTools.style.transform = 'translate3d(0, 22px, 0) scale(.97)';
+        dWakeProductTools.style.filter = 'blur(4px)';
+      }
+
+      function cancelDWakeAnimation() {
+        dWakeToken += 1;
+        dWakeAnimations.forEach(animation => animation.cancel());
+        cancelElementAnimations([
+          dWakeStart,
+          dWakeSettled,
+          dWakeTools,
+          dWakeProductStart,
+          dWakeProductSettled,
+          dWakeProductTools,
+          ...dProductFrames
+        ]);
+        dWakeAnimations = [];
+        dWakeAnimating = false;
+        phone.classList.remove('wake-animating');
+        resetDWakeLayers();
+      }
+
+      function playDWakeAnimation() {
+        if (scheme === 'd') { polished.play(1); return; }
+        cancelDWakeAnimation();
+        const token = dWakeToken;
+        dWakeAnimating = true;
+        phone.classList.add('wake-animating');
+        render();
+
+        if (scene === 'product') {
+          const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          const unit = reducedMotion ? 90 : 1000;
+          const ease = 'cubic-bezier(.22, 1, .36, 1)';
+          const targetFrame = dProductFrames[1];
+          dWakeUnderlay.style.display = 'block';
+          dWakeProductStart.style.display = 'block';
+          dWakeProductSettled.style.display = 'block';
+          dWakeProductTools.style.display = 'block';
+
+          const shrink = dWakeProductStart.animate([
+            { transform: 'translate3d(0, 0, 0) scaleY(1)', filter: 'brightness(1)', opacity: 1, offset: 0 },
+            { transform: 'translate3d(0, -.1%, 0) scaleY(.982)', filter: 'brightness(.997)', opacity: 1, offset: .2 },
+            { transform: 'translate3d(0, -.35%, 0) scaleY(.927)', filter: 'brightness(.99)', opacity: 1, offset: .86 },
+            { transform: 'translate3d(0, -.28%, 0) scaleY(.922)', filter: 'brightness(.99)', opacity: 1, offset: 1 }
+          ], { duration: unit * .75, easing: ease, fill: 'forwards' });
+          const exactHandoff = dWakeProductSettled.animate([
+            { opacity: 0 },
+            { opacity: 0, offset: .05 },
+            { opacity: 1 }
+          ], { duration: unit * .16, delay: unit * .68, easing: 'ease-out', fill: 'forwards' });
+          const fadeSource = dWakeProductStart.animate([
+            { opacity: 1 },
+            { opacity: 1, offset: .18 },
+            { opacity: 0 }
+          ], { duration: unit * .14, delay: unit * .7, easing: 'ease-out', fill: 'forwards' });
+          const toolsEnter = dWakeProductTools.animate([
+            { opacity: 0, transform: 'translate3d(0, 22px, 0) scale(.97)', filter: 'blur(4px)' },
+            { opacity: 1, transform: 'translate3d(0, -2px, 0) scale(1.008)', filter: 'blur(0)', offset: .78 },
+            { opacity: 1, transform: 'translate3d(0, 0, 0) scale(1)', filter: 'blur(0)' }
+          ], { duration: unit * .42, delay: unit * .88, easing: ease, fill: 'forwards' });
+
+          dWakeAnimations = [shrink, exactHandoff, fadeSource, toolsEnter];
+          Promise.all(dWakeAnimations.map(animation => animation.finished)).then(() => {
+            if (token !== dWakeToken) return;
+            const completedAnimations = [...dWakeAnimations];
+            dWakeAnimating = false;
+            phone.classList.remove('wake-animating');
+            phase = 1;
+            resizeProgress = 0;
+            dockProgress = 0;
+            platformSwipeReady = false;
+            phone.classList.add('tracking');
+            render();
+            void targetFrame.offsetWidth;
+            completedAnimations.forEach(animation => animation.cancel());
+            dWakeAnimations = [];
+            resetDWakeLayers();
+            requestAnimationFrame(() => phone.classList.remove('tracking'));
+            announce();
+          }).catch(() => {});
+          return;
+        }
+
+        dWakeUnderlay.style.display = 'block';
+        dWakeStart.style.display = 'block';
+        dWakeSettled.style.display = 'block';
+        dWakeTools.style.display = 'block';
+
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const unit = reducedMotion ? 90 : 1000;
+        const ease = 'cubic-bezier(.22, 1, .36, 1)';
+
+        const shrink = dWakeStart.animate([
+          { transform: 'translate3d(0, 0, 0) scaleY(1)', filter: 'brightness(1)', opacity: 1, offset: 0 },
+          { transform: 'translate3d(0, -.1%, 0) scaleY(.982)', filter: 'brightness(.997)', opacity: 1, offset: .2 },
+          { transform: 'translate3d(0, -.35%, 0) scaleY(.927)', filter: 'brightness(.99)', opacity: 1, offset: .86 },
+          { transform: 'translate3d(0, -.28%, 0) scaleY(.922)', filter: 'brightness(.99)', opacity: 1, offset: 1 }
+        ], { duration: unit * .75, easing: ease, fill: 'forwards' });
+
+        const exactHandoff = dWakeSettled.animate([
+          { opacity: 0 },
+          { opacity: 0, offset: .05 },
+          { opacity: 1 }
+        ], { duration: unit * .16, delay: unit * .68, easing: 'ease-out', fill: 'forwards' });
+
+        const fadeSource = dWakeStart.animate([
+          { opacity: 1 },
+          { opacity: 1, offset: .18 },
+          { opacity: 0 }
+        ], { duration: unit * .14, delay: unit * .7, easing: 'ease-out', fill: 'forwards' });
+
+        const toolsEnter = dWakeTools.animate([
+          { opacity: 0, transform: 'translate3d(0, 22px, 0) scale(.97)', filter: 'blur(4px)' },
+          { opacity: 1, transform: 'translate3d(0, -2px, 0) scale(1.008)', filter: 'blur(0)', offset: .78 },
+          { opacity: 1, transform: 'translate3d(0, 0, 0) scale(1)', filter: 'blur(0)' }
+        ], { duration: unit * .42, delay: unit * .88, easing: ease, fill: 'forwards' });
+
+        dWakeAnimations = [shrink, exactHandoff, fadeSource, toolsEnter];
+        Promise.all(dWakeAnimations.map(animation => animation.finished)).then(() => {
+          if (token !== dWakeToken) return;
+          const completedAnimations = [...dWakeAnimations];
+          dWakeAnimating = false;
+          phone.classList.remove('wake-animating');
+          phase = 1;
+          resizeProgress = 0;
+          dockProgress = 0;
+          platformSwipeReady = false;
+          // 在移除独立工具条前，先无过渡地锁定最终完整帧，避免交接时再次淡入闪烁。
+          phone.classList.add('tracking');
+          render();
+          void dFrames[1].offsetWidth;
+          completedAnimations.forEach(animation => animation.cancel());
+          dWakeAnimations = [];
+          resetDWakeLayers();
+          requestAnimationFrame(() => phone.classList.remove('tracking'));
+          announce();
+        }).catch(() => {});
+      }
+
+      function resetDKnowledgeLayers() {
+        cancelElementAnimations([dMotionMask, dMotionMain, dMotionPanel, ...dFrames, ...dProductFrames]);
+        dMotionMask.style.display = 'none';
+        dMotionMask.style.opacity = '0';
+        dMotionMask.style.transform = 'none';
+        [dMotionMain, dMotionPanel].forEach(layer => {
+          layer.style.display = 'none';
+          layer.style.opacity = '0';
+          layer.style.transform = 'none';
+          layer.style.filter = 'none';
+          layer.style.clipPath = 'none';
+          layer.style.inset = '0';
+          layer.style.left = '0';
+          layer.style.top = '0';
+          layer.style.width = '100%';
+          layer.style.height = '100%';
+          layer.style.objectFit = 'contain';
+          layer.style.transformOrigin = '50% 50%';
+          layer.removeAttribute('src');
+        });
+      }
+
+      function cancelDKnowledgeAnimation() {
+        dKnowledgeToken += 1;
+        dKnowledgeAnimations.forEach(animation => animation.cancel());
+        cancelElementAnimations([dMotionMask, dMotionMain, dMotionPanel, ...dFrames, ...dProductFrames]);
+        dKnowledgeAnimations = [];
+        dKnowledgeAnimating = false;
+        phone.classList.remove('knowledge-animating');
+        resetDKnowledgeLayers();
+      }
+
+      function playDKnowledgeTransition(targetPhase) {
+        if (scheme !== 'd' || (scene !== 'knowledge' && scene !== 'product')) return;
+        if (!((phase === 1 && targetPhase === 2) || (phase === 2 && targetPhase === 3))) return;
+        if (scene === 'knowledge' || scene === 'product') { polished.play(targetPhase); return; }
+
+        cancelDKnowledgeAnimation();
+        const token = dKnowledgeToken;
+        const sourcePhase = phase;
+        const isProductMotion = scene === 'product';
+        const motionFrames = isProductMotion ? dProductFrames : dFrames;
+        const targetFrame = motionFrames[targetPhase];
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const duration = reducedMotion ? 110 : (targetPhase === 2 ? 590 : 520);
+        const ease = 'cubic-bezier(.4, 0, .2, 1)';
+
+        dKnowledgeAnimating = true;
+        phone.classList.add('knowledge-animating');
+        render();
+
+        dMotionMain.src = isProductMotion
+          ? (dProductFrames[1].currentSrc || dProductFrames[1].src)
+          : 'd-knowledge-main-full.png';
+        dMotionPanel.src = targetFrame.currentSrc || targetFrame.src;
+        dMotionMain.style.display = 'block';
+        dMotionPanel.style.display = 'block';
+        if (isProductMotion) {
+          dMotionMain.style.inset = '0';
+          dMotionMain.style.left = '0';
+          dMotionMain.style.top = '0';
+          dMotionMain.style.width = '100%';
+          dMotionMain.style.height = '100%';
+          dMotionMain.style.objectFit = 'contain';
+          dMotionMain.style.transformOrigin = '4.35% 1.22%';
+          dMotionMain.style.clipPath = 'inset(1.2% 3.78% 11.7% 4.35% round 8.8%)';
+        } else {
+          dMotionMain.style.inset = 'auto';
+          dMotionMain.style.left = '4.35%';
+          dMotionMain.style.top = '1.22%';
+          dMotionMain.style.width = '92.16%';
+          dMotionMain.style.height = '87.07%';
+          dMotionMain.style.objectFit = 'fill';
+          dMotionMain.style.transformOrigin = '0 0';
+        }
+        dMotionPanel.style.transformOrigin = '0 0';
+
+        let coverSource;
+        let mainMove;
+        let panelReveal;
+        if (targetPhase === 2) {
+          // 2 → 3：完整主页面的右边界连续向左收窄，右侧建议与底部信息同步渐显。
+          dMotionMask.style.display = 'none';
+          if (!isProductMotion) dMotionMain.style.clipPath = 'none';
+          coverSource = motionFrames[sourcePhase].animate([
+            { opacity: 1 },
+            { opacity: .18, offset: .24 },
+            { opacity: .12 }
+          ], { duration, easing: 'linear', fill: 'forwards' });
+          mainMove = dMotionMain.animate([
+            { opacity: 1, transform: 'scaleX(1)', filter: 'blur(0) brightness(1)' },
+            { opacity: .92, transform: 'scaleX(.82)', filter: 'blur(2px) brightness(.99)', offset: .58 },
+            { opacity: 0, transform: 'scaleX(.72164)', filter: 'blur(6px) brightness(.985)' }
+          ], { duration, easing: ease, fill: 'forwards' });
+          panelReveal = dMotionPanel.animate([
+            { opacity: .12, clipPath: 'polygon(96.22% 1.2%, 96.22% 1.2%, 96.22% 96.3%, 96.22% 96.3%, 96.22% 88%, 96.22% 88%)', filter: 'blur(10px)' },
+            { opacity: .42, clipPath: 'polygon(87% 1.2%, 96.22% 1.2%, 96.22% 96.3%, 68% 96.3%, 68% 88%, 87% 88%)', filter: 'blur(6px)', offset: .35 },
+            { opacity: 1, clipPath: 'polygon(72.2% 1.2%, 96.22% 1.2%, 96.22% 96.3%, 4.35% 96.3%, 4.35% 88%, 72.2% 88%)', filter: 'blur(0)' }
+          ], { duration, easing: ease, fill: 'forwards' });
+        } else {
+          // 3 → 4：保持快速收窄，但让第 4 步底图提前接管并持续交叉淡化，避免中间黑场。
+          dMotionMask.style.display = 'none';
+          if (!isProductMotion) dMotionMain.style.clipPath = 'none';
+          coverSource = motionFrames[sourcePhase].animate([
+            { opacity: 1 },
+            { opacity: .56, offset: .3 },
+            { opacity: .28, offset: .52 },
+            { opacity: .08 }
+          ], { duration, easing: 'linear', fill: 'forwards' });
+          mainMove = dMotionMain.animate([
+            { opacity: 1, transform: 'scaleX(.72164)', filter: 'blur(0) brightness(.985)', easing: ease },
+            { opacity: .7, transform: 'scaleX(.48)', filter: 'blur(1.5px) brightness(.98)', offset: .3, easing: ease },
+            { opacity: .18, transform: 'scaleX(.31)', filter: 'blur(3px) brightness(.975)', offset: .52, easing: ease },
+            { opacity: 0, transform: 'scaleX(.25)', filter: 'blur(4px) brightness(.97)', offset: .66, easing: ease },
+            { opacity: 0, transform: 'scaleX(.22479)', filter: 'blur(4px) brightness(.97)' }
+          ], { duration, easing: 'linear', fill: 'forwards' });
+          panelReveal = dMotionPanel.animate([
+            { opacity: 0, clipPath: 'polygon(72.2% 1.2%, 96.22% 1.2%, 96.22% 96.3%, 4.35% 96.3%, 4.35% 88%, 72.2% 88%)', filter: 'blur(10px)', easing: ease },
+            { opacity: .12, clipPath: 'polygon(56% 1.2%, 96.22% 1.2%, 96.22% 96.3%, 4.35% 96.3%, 4.35% 85%, 56% 85%)', filter: 'blur(6px)', offset: .38, easing: ease },
+            { opacity: .55, clipPath: 'polygon(34% 1.2%, 96.22% 1.2%, 96.22% 96.3%, 4.35% 96.3%, 4.35% 81%, 34% 81%)', filter: 'blur(3px)', offset: .68, easing: ease },
+            { opacity: 1, clipPath: 'polygon(25.1% 1.2%, 96.22% 1.2%, 96.22% 96.3%, 4.35% 96.3%, 4.35% 79%, 25.1% 79%)', filter: 'blur(0)' }
+          ], { duration, easing: 'linear', fill: 'forwards' });
+        }
+
+        const softenSource = motionFrames[sourcePhase].animate([
+          { filter: 'brightness(1)' },
+          { filter: 'brightness(.985)' }
+        ], { duration, fill: 'forwards' });
+
+        const targetBaseReveal = targetFrame.animate(targetPhase === 3 ? [
+          { opacity: 0, filter: 'blur(4px)', offset: 0 },
+          { opacity: 0, filter: 'blur(4px)', offset: .28 },
+          { opacity: .16, filter: 'blur(3px)', offset: .4 },
+          { opacity: .6, filter: 'blur(1.5px)', offset: .68 },
+          { opacity: 1, filter: 'blur(0)', offset: 1 }
+        ] : [
+          { opacity: 0, filter: 'blur(5px)', offset: 0 },
+          { opacity: 0, filter: 'blur(5px)', offset: .44 },
+          { opacity: .4, filter: 'blur(3px)', offset: .68 },
+          { opacity: 1, filter: 'blur(0)', offset: 1 }
+        ], { duration, easing: targetPhase === 3 ? 'linear' : ease, fill: 'forwards' });
+
+        dKnowledgeAnimations = [coverSource, mainMove, panelReveal, softenSource, targetBaseReveal];
+        Promise.all(dKnowledgeAnimations.map(animation => animation.finished)).then(() => {
+          if (token !== dKnowledgeToken) return;
+          const completedAnimations = [...dKnowledgeAnimations];
+          dKnowledgeAnimating = false;
+          phone.classList.remove('knowledge-animating');
+          phase = targetPhase;
+          resizeProgress = targetPhase === 3 ? 1 : 0;
+          dockProgress = 0;
+          // 与目标整帧无过渡交接，避免动画完成后再次闪烁。
+          phone.classList.add('tracking');
+          render();
+          void targetFrame.offsetWidth;
+          completedAnimations.forEach(animation => animation.cancel());
+          dKnowledgeAnimations = [];
+          resetDKnowledgeLayers();
+          requestAnimationFrame(() => phone.classList.remove('tracking'));
+          announce();
+        }).catch(() => {});
+      }
+
+      function renderGuide() {
+        const config = getConfig();
+        const state = config.states[phase];
+        conceptName.textContent = config.concept;
+        schemeTitle.textContent = config.title;
+        schemeSubtitle.textContent = config.subtitle;
+        stateName.textContent = state[0];
+        instruction.textContent = state[1];
+        counter.textContent = `${String(phase + 1).padStart(2, '0')} / 05`;
+
+        schemeButtons.forEach(button => {
+          button.setAttribute('aria-pressed', String(button.dataset.scheme === scheme));
+        });
+
+        sceneButtons.forEach(button => {
+          button.setAttribute('aria-pressed', String(button.dataset.scene === scene));
+        });
+
+        stepButtons.forEach((button, index) => {
+          button.querySelector('[data-label]').textContent = config.labels[index];
+          button.querySelector('[data-action]').textContent = config.actions[index];
+          if (index === phase) button.setAttribute('aria-current', 'step');
+          else button.removeAttribute('aria-current');
+        });
+      }
+
+      function render() {
+        const isProduct = scene === 'product';
+        allFrames.forEach(frame => {
+          frame.style.opacity = '0';
+          frame.style.transform = '';
+          frame.style.filter = '';
+          if (frame.classList.contains('d-frame') || frame.classList.contains('d-product-frame') || frame.classList.contains('product-frame')) frame.style.clipPath = '';
+        });
+
+        if (dWakeAnimating && scheme === 'd' && !isProduct) {
+          setOpacity(dFrames, 0, 1);
+          dWakeUnderlay.style.display = 'block';
+          dWakeStart.style.display = 'block';
+          dWakeSettled.style.display = 'block';
+          dWakeTools.style.display = 'block';
+        } else if (isProduct) {
+          setOpacity(scheme === 'd' ? dProductFrames : productFrames, phase, 1);
+        } else if (scheme === 'e') {
+          eFrames[3].style.clipPath = `inset(6.75% 5.7% 13.3% ${68.2 - 29.6 * resizeProgress}% round 24px)`;
+          if (phase === 0) setOpacity(eFrames, 0, 1);
+          if (phase === 1) setOpacity(eFrames, 1, 1 - dockProgress);
+          if (phase === 2 || phase === 3) {
+            setOpacity(eFrames, 2, 1 - dockProgress);
+            if (resizeProgress > 0.002) setOpacity(eFrames, 3, 1 - dockProgress);
+          }
+          if (phase === 4) setOpacity(eFrames, 4, 1);
+          else if (dockProgress > 0) setOpacity(eFrames, 4, dockProgress);
+        } else {
+          if (phase === 0) setOpacity(dFrames, 0, 1);
+          if (phase === 1) setOpacity(dFrames, 1, 1 - dockProgress);
+          if (phase === 2) {
+            // 003 → 004：保持 003 为底图，从右向左连续揭示 004。
+            // 这样主页面的右边界会跟随拖拽移动，而不是在两张状态图之间跳变。
+            setOpacity(dFrames, 2, 1);
+            setOpacity(dFrames, 3, 1);
+            dFrames[3].style.clipPath = `inset(0 0 0 ${(1 - resizeProgress) * 100}%)`;
+          }
+          if (phase === 3) {
+            // 004 → 005：以 004 为底图，从左向右揭示 005，形成主页面重新展开的连续推移。
+            setOpacity(dFrames, 3, 1);
+            setOpacity(dFrames, 4, 1);
+            dFrames[4].style.clipPath = `inset(0 ${(1 - dockProgress) * 100}% 0 0)`;
+          }
+          if (phase === 4) setOpacity(dFrames, 4, 1);
+        }
+
+        navHit.style.display = phase === 0 && !dWakeAnimating && !dKnowledgeAnimating ? 'block' : 'none';
+        navHit.setAttribute('aria-label', scheme === 'd' && !isProduct
+          ? '点击手机左侧红色按钮唤醒AI伴随模式'
+          : '双击手机左侧红色按钮唤醒AI伴随模式');
+        orbHit.style.display = isProduct
+          ? (phase === 1 && !dKnowledgeAnimating ? 'block' : 'none')
+          : scheme === 'd'
+          ? (phase === 1 && !dKnowledgeAnimating ? 'block' : 'none')
+          : (phase >= 1 && phase <= 3 ? 'block' : 'none');
+        suggestionHit.style.display = isProduct
+          ? ((phase === 1 || phase === 2) && !dWakeAnimating && !dKnowledgeAnimating ? 'block' : 'none')
+          : scheme === 'd'
+          ? (phase === 1 && !dKnowledgeAnimating ? 'block' : 'none')
+          : (phase === 1 || phase === 2 ? 'block' : 'none');
+        resizeHit.style.display = scheme === 'e' && !isProduct && phase === 3 ? 'block' : 'none';
+        bottomZone.style.display = scheme === 'd' && !isProduct && !dKnowledgeAnimating && (phase === 2 || phase === 3) ? 'block' : 'none';
+        edgeHit.style.display = scheme === 'e' && !isProduct && phase === 4 ? 'block' : 'none';
+        platformHit.style.display = 'none';
+        productNavHit.style.display = isProduct && phase === 3 ? 'block' : 'none';
+        if (isProduct && scheme === 'd') {
+          productNavHit.style.left = '31%';
+          productNavHit.style.right = '31%';
+          productNavHit.style.bottom = '.3%';
+          productNavHit.style.width = 'auto';
+          productNavHit.style.height = '5.4%';
+        } else if (!isProduct && phase === 2) {
+          orbHit.style.left = 'auto';
+          orbHit.style.right = '3.9%';
+          orbHit.style.bottom = '2%';
+          orbHit.style.width = '17.5%';
+          suggestionHit.style.left = 'auto';
+          suggestionHit.style.right = '7.2%';
+          suggestionHit.style.bottom = '20.3%';
+          suggestionHit.style.width = '26%';
+          suggestionHit.style.height = '7.6%';
+        } else {
+          productNavHit.style.left = '30%';
+          productNavHit.style.right = '30%';
+          productNavHit.style.bottom = '.4%';
+          productNavHit.style.width = 'auto';
+          productNavHit.style.height = '6%';
+        }
+        resizeHit.style.left = `${64.8 - 29.6 * resizeProgress}%`;
+        if (scheme === 'd' && !isProduct && phase === 2) {
+          bottomZone.style.left = '72%';
+          bottomZone.style.right = '3%';
+          bottomZone.style.top = '36%';
+          bottomZone.style.bottom = 'auto';
+          bottomZone.style.width = '25%';
+          bottomZone.style.height = '10%';
+          bottomZone.style.cursor = 'pointer';
+          bottomZone.setAttribute('aria-label', '打开建议：蓝调时刻是什么');
+        } else if (scheme === 'd' && !isProduct && phase === 3) {
+          bottomZone.style.left = '11.5%';
+          bottomZone.style.right = 'auto';
+          bottomZone.style.top = 'auto';
+          bottomZone.style.bottom = '10.5%';
+          bottomZone.style.width = '15%';
+          bottomZone.style.height = '10%';
+          bottomZone.style.cursor = 'se-resize';
+          bottomZone.setAttribute('aria-label', '拖动左侧主屏幕右下角的弧形把手恢复伴随浏览');
+        }
+
+        suggestionHit.style.top = 'auto';
+        if (scheme === 'd' && isProduct && phase === 2) {
+          suggestionHit.style.left = 'auto';
+          suggestionHit.style.right = '5.8%';
+          suggestionHit.style.top = '28.2%';
+          suggestionHit.style.bottom = 'auto';
+          suggestionHit.style.width = '21.4%';
+          suggestionHit.style.height = '19.4%';
+        } else if (scheme === 'e' && isProduct && phase === 2) {
+          suggestionHit.style.left = 'auto';
+          suggestionHit.style.right = '7.7%';
+          suggestionHit.style.top = '51.8%';
+          suggestionHit.style.bottom = 'auto';
+          suggestionHit.style.width = '21.5%';
+          suggestionHit.style.height = '19.5%';
+        } else if (scheme === 'd') {
+          orbHit.style.left = '6.5%';
+          orbHit.style.right = 'auto';
+          orbHit.style.bottom = '2.5%';
+          orbHit.style.width = '17.5%';
+          suggestionHit.style.left = '20%';
+          suggestionHit.style.right = '4.2%';
+          suggestionHit.style.bottom = '3.2%';
+          suggestionHit.style.width = 'auto';
+          suggestionHit.style.height = '5.7%';
+        } else {
+          orbHit.style.left = 'auto';
+          orbHit.style.right = '3.9%';
+          orbHit.style.bottom = '2%';
+          orbHit.style.width = '17.5%';
+          suggestionHit.style.left = 'auto';
+          suggestionHit.style.right = phase === 2 ? '7.8%' : '7.2%';
+          suggestionHit.style.bottom = phase === 2 ? '20.3%' : '12.3%';
+          suggestionHit.style.width = phase === 2 ? '22.8%' : '26%';
+          suggestionHit.style.height = phase === 2 ? '7.6%' : '5.8%';
+        }
+        orbHit.style.cursor = scheme === 'e' && !isProduct ? 'grab' : 'pointer';
+        suggestionHit.setAttribute('aria-label', isProduct
+          ? (phase === 2 ? '打开产品信息建议' : '识别屏幕中的商品')
+          : scheme === 'e' && phase === 2
+          ? '打开建议：蓝调时刻是什么'
+          : '识别屏幕并发起知识查询');
+        phone.dataset.scheme = scheme;
+        phone.dataset.scene = scene;
+        polished.sync();
+        renderGuide();
+        eFloating.sync();
+        eProductFloating.sync();
+      }
+
+      function announce() {
+        const config = getConfig();
+        const state = config.states[phase];
+        live.textContent = `${config.concept}，第 ${phase + 1} 步，${state[0]}。${state[1]}`;
+      }
+
+      function stopAnimation() {
+        if (animationFrame) cancelAnimationFrame(animationFrame);
+        animationFrame = 0;
+      }
+
+      function animateValue(from, to, duration, update, complete) {
+        stopAnimation();
+        const startedAt = performance.now();
+        const ease = t => 1 - Math.pow(1 - t, 3);
+        const tick = now => {
+          const raw = clamp((now - startedAt) / duration);
+          update(from + (to - from) * ease(raw));
+          if (raw < 1) animationFrame = requestAnimationFrame(tick);
+          else {
+            animationFrame = 0;
+            if (complete) complete();
+          }
+        };
+        animationFrame = requestAnimationFrame(tick);
+      }
+
+      function jumpToStep(nextPhase, shouldAnnounce = true) {
+        const targetPhase = clamp(nextPhase, 0, 4);
+        if (!dWakeAnimating && shouldAnnounce && scheme === 'd' && phase === 0 && targetPhase === 1) {
+          playDWakeAnimation();
+          return;
+        }
+        if (!dKnowledgeAnimating && shouldAnnounce && scheme === 'd' && phase === 1 && targetPhase === 2) {
+          playDKnowledgeTransition(2);
+          return;
+        }
+        if (!dKnowledgeAnimating && shouldAnnounce && scheme === 'd' && phase === 2 && targetPhase === 3) {
+          playDKnowledgeTransition(3);
+          return;
+        }
+        cancelDWakeAnimation();
+        polished.cancel();
+        cancelDKnowledgeAnimation();
+        stopAnimation();
+        tracking = null;
+        // 直接跳转（尤其是“重新演示”）必须无过渡复位，避免上一状态淡出形成重影。
+        phone.classList.add('tracking');
+        phase = targetPhase;
+        resizeProgress = phase === 3 ? 1 : 0;
+        dockProgress = phase === 4 ? 1 : 0;
+        platformSwipeReady = false;
+        render();
+        void dFrames[targetPhase].offsetWidth;
+        requestAnimationFrame(() => phone.classList.remove('tracking'));
+        if (shouldAnnounce) announce();
+      }
+
+      function setScheme(nextScheme) {
+        if (!schemes[nextScheme]) return;
+        scheme = nextScheme;
+        jumpToStep(0);
+      }
+
+      function setScene(nextScene) {
+        if (nextScene !== 'knowledge' && nextScene !== 'product') return;
+        scene = nextScene;
+        jumpToStep(0);
+      }
+
+      function openAssistant() {
+        if (phase !== 1) return;
+        if (scheme === 'd') {
+          playDKnowledgeTransition(2);
+          return;
+        }
+        phase = 2;
+        resizeProgress = 0;
+        dockProgress = 0;
+        platformSwipeReady = false;
+        render();
+        announce();
+      }
+
+      function beginTracking(type, event, progress = 0) {
+        tracking = type;
+        startX = event.clientX;
+        startY = event.clientY;
+        startProgress = progress;
+        phone.classList.add('tracking');
+        event.currentTarget.setPointerCapture(event.pointerId);
+      }
+
+      function finishResize() {
+        const target = resizeProgress >= .42 ? 1 : 0;
+        const from = resizeProgress;
+        tracking = null;
+        phone.classList.add('tracking');
+        animateValue(from, target, 240, value => {
+          resizeProgress = value;
+          render();
+        }, () => {
+          phase = target ? 3 : 2;
+          resizeProgress = target;
+          phone.classList.remove('tracking');
+          render();
+          announce();
+        });
+      }
+
+      function finishDock(fallbackPhase = phase) {
+        const target = dockProgress >= .34 ? 1 : 0;
+        const from = dockProgress;
+        tracking = null;
+        phone.classList.add('tracking');
+        animateValue(from, target, 230, value => {
+          dockProgress = value;
+          render();
+        }, () => {
+          phase = target ? 4 : fallbackPhase;
+          dockProgress = target;
+          if (target) resizeProgress = 0;
+          phone.classList.remove('tracking');
+          render();
+          announce();
+        });
+      }
+
+      function finishPlatformSwipe() {
+        const shouldSwitch = platformSwipeReady;
+        tracking = null;
+        platformSwipeReady = false;
+        if (shouldSwitch) {
+          phase = 4;
+          resizeProgress = 0;
+          dockProgress = 1;
+          render();
+          announce();
+        }
+        phone.classList.remove('tracking');
+      }
+
+      function restoreFromEdge() {
+        if (phase !== 4) return;
+        phase = 1;
+        dockProgress = 1;
+        resizeProgress = 0;
+        animateValue(1, 0, 260, value => {
+          dockProgress = value;
+          render();
+        }, () => {
+          dockProgress = 0;
+          render();
+          announce();
+        });
+      }
+
+      navHit.addEventListener('pointerup', event => {
+        if (scheme === 'd' && scene === 'knowledge' && phase === 0) {
+          lastTap = 0;
+          jumpToStep(1);
+          event.preventDefault();
+          return;
+        }
+        const now = performance.now();
+        if (now - lastTap < 380) {
+          lastTap = 0;
+          jumpToStep(1);
+        } else {
+          lastTap = now;
+          navHit.animate([
+            { transform: 'scaleX(.92)', opacity: .28 },
+            { transform: 'scaleX(1)', opacity: 0 }
+          ], { duration: 240, easing: 'ease-out' });
+        }
+        event.preventDefault();
+      });
+
+      navHit.addEventListener('dblclick', event => {
+        // 第二次 pointerup 已经启动商品场景的唤醒动画；忽略随后产生的 dblclick，
+        // 避免同一次双击取消动画并直接跳到第 2 步底图。
+        if (!dWakeAnimating && !dKnowledgeAnimating && phase === 0) jumpToStep(1);
+        event.preventDefault();
+      });
+
+      suggestionHit.addEventListener('click', () => {
+        if (scene === 'product' && phase === 2) {
+          jumpToStep(3);
+          return;
+        }
+        if (scheme === 'e' && scene === 'knowledge' && phase === 2) {
+          jumpToStep(3);
+          return;
+        }
+        openAssistant();
+      });
+      platformHit.addEventListener('click', () => {
+        if (scene === 'product' && phase === 3) jumpToStep(4);
+      });
+
+      productNavHit.addEventListener('pointerdown', event => {
+        if (scene === 'product' && phase === 3) {
+          platformSwipeReady = false;
+          beginTracking('platform-swipe', event, 0);
+        }
+      });
+      productNavHit.addEventListener('pointermove', event => {
+        if (tracking !== 'platform-swipe') return;
+        const leftDistance = Math.max(0, startX - event.clientX);
+        const upwardDistance = Math.max(0, startY - event.clientY);
+        platformSwipeReady = leftDistance >= 12 || upwardDistance >= 12;
+      });
+      productNavHit.addEventListener('pointerup', () => {
+        if (tracking === 'platform-swipe') finishPlatformSwipe();
+      });
+      productNavHit.addEventListener('pointercancel', () => {
+        if (tracking === 'platform-swipe') finishPlatformSwipe();
+      });
+
+      orbHit.addEventListener('pointerdown', event => {
+        if (scheme === 'e' && scene === 'knowledge') beginTracking('dock', event, dockProgress);
+        else beginTracking('orb-tap', event, 0);
+      });
+
+      orbHit.addEventListener('pointermove', event => {
+        if (tracking !== 'dock') return;
+        dockProgress = clamp(startProgress + (event.clientX - startX) / (phone.clientWidth * .13));
+        render();
+      });
+
+      orbHit.addEventListener('pointerup', event => {
+        const moved = Math.abs(event.clientX - startX);
+        if (tracking === 'orb-tap') {
+          tracking = null;
+          phone.classList.remove('tracking');
+          if (moved < 9) openAssistant();
+          return;
+        }
+        if (tracking !== 'dock') return;
+        if (moved < 9) {
+          tracking = null;
+          phone.classList.remove('tracking');
+          dockProgress = 0;
+          if (phase === 1) openAssistant();
+          else jumpToStep(1);
+        } else finishDock(phase);
+      });
+
+      orbHit.addEventListener('pointercancel', () => {
+        if (tracking === 'dock') finishDock(phase);
+        else {
+          tracking = null;
+          phone.classList.remove('tracking');
+        }
+      });
+
+      resizeHit.addEventListener('pointerdown', event => {
+        if (scheme === 'e') beginTracking('resize', event, resizeProgress);
+      });
+
+      resizeHit.addEventListener('pointermove', event => {
+        if (tracking !== 'resize') return;
+        resizeProgress = clamp(startProgress + (startX - event.clientX) / (phone.clientWidth * .29));
+        phase = resizeProgress > .98 ? 3 : 2;
+        render();
+      });
+
+      resizeHit.addEventListener('pointerup', () => {
+        if (tracking === 'resize') finishResize();
+      });
+      resizeHit.addEventListener('pointercancel', () => {
+        if (tracking === 'resize') finishResize();
+      });
+
+      bottomZone.addEventListener('pointerdown', event => {
+        if (scheme !== 'd' || scene !== 'knowledge') return;
+        if (phase === 3) beginTracking('d-return', event, dockProgress);
+      });
+
+      bottomZone.addEventListener('pointermove', event => {
+        if (tracking === 'd-return') {
+          const rightDistance = Math.max(0, event.clientX - startX);
+          const downwardDistance = Math.max(0, event.clientY - startY);
+          dockProgress = clamp(startProgress + Math.max(rightDistance, downwardDistance) / (phone.clientWidth * .34));
+          render();
+        }
+      });
+
+      bottomZone.addEventListener('pointerup', () => {
+        if (tracking === 'd-return') finishDock(3);
+      });
+
+      bottomZone.addEventListener('pointercancel', () => {
+        if (tracking === 'd-return') finishDock(3);
+      });
+
+      bottomZone.addEventListener('click', () => {
+        if (scheme === 'd' && scene === 'knowledge' && phase === 2) playDKnowledgeTransition(3);
+      });
+
+      edgeHit.addEventListener('click', restoreFromEdge);
+      edgeHit.addEventListener('pointerdown', event => {
+        if (phase !== 4) return;
+        beginTracking('restore', event, 1);
+      });
+      edgeHit.addEventListener('pointermove', event => {
+        if (tracking !== 'restore') return;
+        phase = 1;
+        dockProgress = clamp(1 - (startX - event.clientX) / (phone.clientWidth * .13));
+        render();
+      });
+      edgeHit.addEventListener('pointerup', () => {
+        if (tracking !== 'restore') return;
+        const target = dockProgress <= .66 ? 0 : 1;
+        const from = dockProgress;
+        tracking = null;
+        phone.classList.remove('tracking');
+        animateValue(from, target, 220, value => {
+          dockProgress = value;
+          render();
+        }, () => {
+          phase = target === 1 ? 4 : 1;
+          dockProgress = target;
+          render();
+          announce();
+        });
+      });
+
+      schemeButtons.forEach(button => {
+        button.addEventListener('click', () => setScheme(button.dataset.scheme));
+      });
+      sceneButtons.forEach(button => {
+        button.addEventListener('click', () => setScene(button.dataset.scene));
+      });
+      stepButtons.forEach(button => {
+        button.addEventListener('click', () => jumpToStep(Number(button.dataset.step)));
+      });
+      document.getElementById('restart').addEventListener('click', () => jumpToStep(0));
+      document.getElementById('next').addEventListener('click', () => jumpToStep((phase + 1) % 5));
+
+      window.addEventListener('keydown', event => {
+        if (/^[1-5]$/.test(event.key)) jumpToStep(Number(event.key) - 1);
+        else if (event.key === 'ArrowRight') jumpToStep(Math.min(4, phase + 1));
+        else if (event.key === 'ArrowLeft') jumpToStep(Math.max(0, phase - 1));
+        else if (event.key.toLowerCase() === 'r') jumpToStep(0);
+        else if (event.key.toLowerCase() === 'd') setScheme('d');
+        else if (event.key.toLowerCase() === 'e') setScheme('e');
+        else if (event.key.toLowerCase() === 'k') setScene('knowledge');
+        else if (event.key.toLowerCase() === 'p') setScene('product');
+      });
+
+      phone.addEventListener('contextmenu', event => event.preventDefault());
+      window.addEventListener('blur', () => {
+        if (tracking === 'resize') finishResize();
+        else if (tracking === 'dock' || tracking === 'd-return') finishDock(phase);
+        else if (tracking === 'platform-swipe') finishPlatformSwipe();
+      });
+
+      /* E 的两个子页在 display:none 状态下加载时量不到尺寸，可见后必须主动推一次 resize。
+         iOS Safari 不会像 Chrome 那样自动补发 resize，所以这里显式通知。 */
+      function nudgeFrameSize(frame) {
+        const ping = () => {
+          try {
+            frame.contentWindow?.postMessage({ type: 'e-resize' }, '*');
+            frame.contentWindow?.dispatchEvent(new Event('resize'));
+          } catch (error) { /* 跨域时忽略 */ }
+        };
+        /* 子页如果始终量不到自己的尺寸（Safari 下 iframe 刚显示时常见），
+           父页直接按 iframe 的实际盒子把缩放变量写进去，兜底保证画布不会按 1:1 铺开。 */
+        const forceFit = () => {
+          try {
+            const doc = frame.contentDocument;
+            if (!doc) return;
+            const inline = doc.documentElement.style;
+            if (parseFloat(inline.getPropertyValue('--w')) > 0) return;
+            const box = frame.getBoundingClientRect();
+            const height = Math.min(box.height, box.width * 1640 / 1033);
+            if (!height) return;
+            inline.setProperty('--scale', height / 1640);
+            inline.setProperty('--w', height * 1033 / 1640 + 'px');
+            inline.setProperty('--h', height + 'px');
+          } catch (error) { /* 跨域时忽略 */ }
+        };
+        requestAnimationFrame(ping);
+        setTimeout(ping, 120);
+        setTimeout(() => { ping(); forceFit(); }, 460);
+        setTimeout(() => { ping(); forceFit(); }, 1200);
+      }
+
+      const eFloating = (() => {
+        const frame = document.getElementById('eKnowledgeFloating');
+        const enabled = () => scheme === 'e' && scene === 'knowledge';
+        let lastPhase = null, wasEnabled = false;
+        function sync(force = false) {
+          const active = enabled();
+          const target = active ? phase : 0;
+          if (force || target !== lastPhase || active !== wasEnabled) {
+            frame.contentWindow?.postMessage({type:'e-floating-go', phase:target}, '*');
+            lastPhase = target;
+          }
+          if (active && !wasEnabled) nudgeFrameSize(frame);
+          wasEnabled = active;
+        }
+        frame.addEventListener('load', () => sync(true));
+        window.addEventListener('message', event => {
+          if (event.source !== frame.contentWindow || !enabled()) return;
+          if (event.data?.type === 'e-floating-state') {
+            const value = event.data.phase;
+            if (!Number.isInteger(value) || value < 0 || value > 4) return;
+            phase = value;
+            lastPhase = value;
+            resizeProgress = value === 3 ? 1 : 0;
+            dockProgress = value === 4 ? 1 : 0;
+            renderGuide();
+            announce();
+          } else if (event.data?.type === 'e-floating-key' && /^[1-5dDekKpPrR]$/.test(event.data.key)) {
+            window.dispatchEvent(new KeyboardEvent('keydown', {key:event.data.key}));
+          }
+        });
+        return {sync};
+      })();
+
+      const eProductFloating = (() => {
+        const frame = document.getElementById('eProductFloating');
+        const enabled = () => scheme === 'e' && scene === 'product';
+        let lastHost = null, wasEnabled = false, childPhase = 0;
+        function request(target) {
+          childPhase = target;
+          lastHost = Math.min(4, target);
+          frame.contentWindow?.postMessage({type:'e-product-go', phase:target}, '*');
+        }
+        function sync(force = false) {
+          const active = enabled();
+          if (force || active !== wasEnabled || (active && phase !== lastHost)) request(active ? phase : 0);
+          if (active && !wasEnabled) nudgeFrameSize(frame);
+          wasEnabled = active;
+        }
+        frame.addEventListener('load', () => sync(true));
+        window.addEventListener('message', event => {
+          if (event.source !== frame.contentWindow || !enabled()) return;
+          if (event.data?.type === 'e-product-state') {
+            const value = event.data.phase;
+            if (!Number.isInteger(value) || value < 0 || value > 5) return;
+            childPhase = value;
+            // Keep the existing five right-hand labels verbatim. Both marketplace
+            // states, expanded and edge-docked, remain under cross-platform companion.
+            phase = Math.min(4, value);
+            lastHost = phase;
+            renderGuide();
+            announce();
+          } else if (event.data?.type === 'e-product-key' && /^[dDkKpPrR]$/.test(event.data.key)) {
+            if (event.data.key.toLowerCase() === 'r') request(0);
+            else window.dispatchEvent(new KeyboardEvent('keydown', {key:event.data.key}));
+          }
+        });
+        const intercept = (node, action) => node.addEventListener('click', event => {
+          if (!enabled()) return;
+          event.preventDefault(); event.stopImmediatePropagation(); action();
+        }, true);
+        stepButtons.forEach(button => intercept(button, () => request(Number(button.dataset.step))));
+        intercept(document.getElementById('restart'), () => request(0));
+        intercept(document.getElementById('next'), () => request((childPhase + 1) % 6));
+        window.addEventListener('keydown', event => {
+          if (!enabled()) return;
+          let target = null;
+          if (/^[1-6]$/.test(event.key)) target = Number(event.key) - 1;
+          else if (event.key === 'ArrowRight') target = Math.min(5, childPhase + 1);
+          else if (event.key === 'ArrowLeft') target = Math.max(0, childPhase - 1);
+          else if (event.key === 'Escape' || event.key.toLowerCase() === 'r') target = 0;
+          if (target !== null) {
+            event.preventDefault(); event.stopImmediatePropagation(); request(target);
+          }
+        }, true);
+        return {sync};
+      })();
+
+      jumpToStep(0, false);
+    })();
+  </script>
+
+  <script>
+    /* Mobile action panel: keep the step list / controls reachable as a bottom sheet. */
+    (() => {
+      const guide = document.querySelector('.guide');
+      const toggle = document.getElementById('sheetToggle');
+      if (!guide || !toggle) return;
+
+      const root = document.documentElement;
+      const mq = window.matchMedia('(max-width: 780px)');
+      const isOpen = () => guide.classList.contains('sheet-open');
+
+      function syncHeight() {
+        if (!mq.matches) { root.style.removeProperty('--sheet-h'); return; }
+        if (isOpen()) return;
+        root.style.setProperty('--sheet-h', Math.ceil(guide.getBoundingClientRect().height) + 'px');
+      }
+
+      function setOpen(open) {
+        guide.classList.toggle('sheet-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        if (open) guide.scrollTop = 0;
+        else requestAnimationFrame(syncHeight);
+      }
+
+      toggle.addEventListener('click', () => setOpen(!isOpen()));
+
+      guide.addEventListener('click', event => {
+        if (event.target.closest('#sheetToggle')) return;
+        if (mq.matches && event.target.closest('.step, .control')) {
+          setTimeout(() => setOpen(false), 80);
+        }
+      }, true);
+
+      /* Tap anywhere outside the panel to fold it back down. */
+      document.addEventListener('pointerdown', event => {
+        if (!mq.matches || !isOpen() || guide.contains(event.target)) return;
+        setOpen(false);
+      }, true);
+
+      mq.addEventListener('change', () => { setOpen(false); syncHeight(); });
+      window.addEventListener('resize', syncHeight);
+      window.addEventListener('orientationchange', () => setTimeout(syncHeight, 220));
+      window.addEventListener('load', syncHeight);
+      requestAnimationFrame(syncHeight);
+      document.fonts?.ready.then(syncHeight);
+
+      /* Step copy changes height slightly (1 vs 2 lines) — keep the phone clear of the sheet. */
+      if ('ResizeObserver' in window) {
+        new ResizeObserver(syncHeight).observe(guide);
+      }
+    })();
+  </script>
+</body>
+</html>
